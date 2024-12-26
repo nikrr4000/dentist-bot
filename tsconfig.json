@@ -1,0 +1,36 @@
+{
+	"extends": "@tsconfig/node22/tsconfig.json",
+	"compilerOptions": {
+		"strict": true,
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"target": "ESNext",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "./src",
+		"paths": {
+			"pino": ["./node_modules/pino"],
+			"#db/*": ["dbSetup/*"],
+			"#keyboards/*": ["keyboards/*"],
+			"#conv/*": ["conversations/*"],
+			"#controllers/*": ["controllers/*"],
+			"#serviceMessages/*": ["serviceMessages/*"],
+			"#helpers/*": ["helpers/*"],
+			"#types/*": ["types/*"],
+			"#middleware/*": ["middleware/*"],
+			"#handlers/*": ["handlers/*"],
+			"#root/*": ["./*"]
+		},
+		"typeRoots": ["./config", "./node_modules/@types"]
+	},
+	"exclude": ["node_modules/", "dist"],
+	"include": ["config/*", "src/**/*"],
+	"esModuleInterop": true,
+	"forceConsistentCasingInFileNames": true,
+	"strict": true,
+	"skipLibCheck": true
+}
