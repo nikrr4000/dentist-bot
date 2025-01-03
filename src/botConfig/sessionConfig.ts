@@ -12,6 +12,7 @@ const initialConfig: SessionData = {
   lastMsgId: 0,
   editMode: true,
   conversation: {},
+  isAdmin: false
 };
 
 export default initialConfig;

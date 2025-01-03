@@ -31,11 +31,6 @@ export default class Appointments extends Model<
 	@Column({
 		type: DataType.DATE,
 	})
-	declare date: Date;
-
-	@Column({
-		type: DataType.DATE,
-	})
 	declare start: Date;
 
 	@Column({

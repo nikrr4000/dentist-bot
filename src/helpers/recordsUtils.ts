@@ -7,12 +7,13 @@ import dates from "./dates.js"
 import { keyboardFromData } from "./keyboardUtils.js"
 import { usersInfoManager } from "./usersUtils.js"
 import type { RecordT } from "#db/models/Records.js"
+import notificator from "./notificator.js"
 
 const recordServices = {
     cancelRecord: async (recordId: number) => {
         const destroyRes = recordsCtrl.destroy({ id: recordId })
-        // if (destroyRes === 0) thro
         await slotsServices(0).discardRecordSlots(recordId)
+        notificator.sendInfoMsg('record', 'Запись отменена "ДАННЫЕ О ЗАПИСИ"')
         return true
     }
 }
@@ -57,7 +58,7 @@ const createRecordTexts = {
         const list = (await Promise.all(listPromises)).join('\n')
 
         return list
-    }
+    },
 }
 
 const createRecordKs = {

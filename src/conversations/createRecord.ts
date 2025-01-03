@@ -3,7 +3,6 @@ import apptCtrl from "#db/handlers/apptCtrl.js";
 import apptSlotsCtrl from "#db/handlers/apptSlotsCtrl.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import type { ApptSlotsCreationT, ApptSlotsT } from "#db/models/ApptSlots.js";
-import ApptSlots from "#db/models/ApptSlots.js";
 import type { RecordCreationT } from "#db/models/Records.js";
 import { manageApptSlots, manageApptSlotsK } from "#helpers/apptSlotsUtils.js";
 import { apptsServices } from "#helpers/apptUtils.js";
@@ -14,10 +13,12 @@ import { createRecordTexts } from "#helpers/recordsUtils.js";
 import { mainMenu, menuDenyConfirmK } from "#keyboards/generalKeyboards.js";
 import startHandler from "#serviceMessages/startHandler.js";
 import type { MyContext, MyConversation } from "#types/grammy.types.js";
-import { Op, type Transaction } from "sequelize";
+import type { Transaction } from "sequelize";
 import unlessActions from "./helpers/unlessActions.js";
-import { InlineKeyboard } from "grammy";
 import logger from "#root/logger.js";
+import Users from "#db/models/Users.js";
+import notificator from "#helpers/notificator.js";
+import dates from "#helpers/dates.js";
 
 type recordInfoGatheringT = {
 	procedureId: string;
@@ -33,29 +34,36 @@ export async function createRecord(
 	ctx: MyContext,
 ) {
 	const h = recordH(ctx, conversation);
-	const apptId = h.apptId;
 	const userId = ctx.userId
-
-	const [procedureName, procedureId] = await h.getProcedureId();
-
-	const [intervalLabel, intervalIds] = await h.getInterval(apptId, procedureId);
-	if (!intervalLabel || !intervalIds) return
-
-	const checkText = await h.createRecordCheckText(apptId, procedureName, intervalLabel)
-	const answer = await h.checkRecordInfo(ctx, conversation, checkText)
-	const approved = handleMenuDenyConfirmKAnswer(answer);
-
-	if (!approved)
+	try
 	{
-		return h.falseAnswerHandler()
-	}
+		const apptId = h.apptId;
 
-	const dbSaveRes = await h.trueAnswerHandler({
-		apptId,
-		userId,
-		procedureId,
-	}, intervalIds)
-	h.displayRegResult(dbSaveRes)
+		const [procedureName, procedureId] = await h.getProcedureId();
+
+		const [intervalLabel, intervalIds] = await h.getInterval(apptId, procedureId);
+		if (!intervalLabel || !intervalIds) return
+
+		const checkText = await h.createRecordCheckText(apptId, procedureName, intervalLabel)
+		const answer = await h.checkRecordInfo(ctx, conversation, checkText)
+		const approved = handleMenuDenyConfirmKAnswer(answer);
+
+		if (!approved)
+		{
+			return h.falseAnswerHandler()
+		}
+
+		const dbSaveRes = await h.trueAnswerHandler({
+			apptId,
+			userId,
+			procedureId,
+		}, intervalIds)
+		h.displayRegResult(dbSaveRes)
+		h.sendInfoMessage(userId, apptId, intervalLabel, procedureName)
+	} catch (error)
+	{
+		h.errorHandler(error as Error, userId)
+	}
 }
 
 const recordH = (ctx: MyContext, conversation: MyConversation) => ({
@@ -142,7 +150,36 @@ const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 	displayRegResult(result: boolean) {
 		result ?
 			ctx.editMessageText(this.texts.success, { reply_markup: mainMenu.menu }) :
-			ctx.editMessageText(this.texts.error, { reply_markup: mainMenu.menu })
+			() => {
+				ctx.editMessageText(this.texts.error, { reply_markup: mainMenu.menu })
+				throw new Error()
+			}
+	},
+	async sendInfoMessage(userId: number, apptId: number, recordInterval: string, procedureName: string) {
+		const user = await dbManageH.findUser(userId)
+		const appt = await dbManageH.findAppt(apptId)
+		const apptDate = appt ? dates.getStrDateWithoutTime(dates.parseApptDate(appt.start)) : 'Проблема с отображением даты приёма'
+
+		let text = 'Была создана новая запись:\n'
+		text += `Приём: ${apptDate}\n`
+		text += `Время: ${recordInterval}\n`
+		text += `Процедура: ${procedureName}\n`
+		text += `Имя: ${user?.firstName} ${user?.secondName}\n`
+		text += `username: @${user?.username || 'username скрыт или не был найден'}`
+
+		notificator.sendInfoMsg('record', text)
+	},
+	async errorHandler(error: Error, userId: number) {
+		const user = await dbManageH.findUser(userId)
+
+		let text = 'Ошибка при попытке создать запись\n'
+		text += `Id: ${userId}\n`
+		text += `username: @${user?.username || 'username скрыл или не найден'}\n`
+		text += `Имя: ${user?.firstName} ${user?.secondName}`
+
+		notificator.sendInfoMsg('record', text)
+		text += `\n${error}`
+		notificator.sendInfoMsg('error', text)
 	}
 });
 
@@ -207,5 +244,7 @@ const dbManageH = {
 
 		return Promise.all(createPromises)
 	},
-	updateSlots: (recordId: number, timeInterval: [Date, Date], transaction: Transaction) => apptSlotsCtrl.bulkUpdateRecordIdByIntervalBorders({ recordId }, timeInterval, transaction)
+	updateSlots: (recordId: number, timeInterval: [Date, Date], transaction: Transaction) => apptSlotsCtrl.bulkUpdateRecordIdByIntervalBorders({ recordId }, timeInterval, transaction),
+	findUser: (userId: number) => Users.findOne({ where: { userId } }),
+	findAppt: (id: number) => apptCtrl.findOne({ id })
 }

@@ -20,6 +20,8 @@ import { createRecord } from "#conv/createRecord.js";
 import ApptSlots from "#db/models/ApptSlots.js";
 import Appointments from "#db/models/Appointments.js";
 import Records from "#db/models/Records.js";
+import isUserAdmin from "#middleware/isUserAdmin.js";
+import returner from "#middleware/returner.js";
 
 (async () => {
 	await sequelize.sync({ alter: true });
@@ -44,7 +46,9 @@ bot.use(conversations());
 bot.use(createConversation(userReg));
 bot.use(createConversation(createAppt));
 bot.use(createConversation(createRecord));
+bot.use(isUserAdmin)
 bot.use(ctxExtender);
+bot.use(returner)
 bot.use(traceRoutes);
 bot.use(keyboard);
 

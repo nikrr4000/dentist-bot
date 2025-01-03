@@ -25,7 +25,7 @@ keyboard.callbackQuery(/gen_/, async (ctx) => {
 		'records-check': async (ctx, ...args) => genUnit(ctx, ...args).showSchedule()
 	};
 
-	// TODO: Add more strinct typing: third and fourth types acn be undefined
+	// TODO: Add more strict typing: third and fourth types acn be undefined
 	const [_, actionName, actionMode, pathId, userId] =
 		callbackDataSplitter<actionMap>(ctx);
 

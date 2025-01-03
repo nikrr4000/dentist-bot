@@ -1,5 +1,6 @@
 import apptCtrl from "#db/handlers/apptCtrl.js";
 import { apptsKServices, apptsServices } from "#helpers/apptUtils.js";
+import notificator from "#helpers/notificator.js";
 import { createRecordTexts } from "#helpers/recordsUtils.js";
 import { adminMenu, backButton } from "#keyboards/generalKeyboards.js";
 import type { MyContext } from "#types/grammy.types.js";
@@ -28,7 +29,7 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
             k = apptsKServices.getApptActions(appt)
         } catch (error)
         {
-            // TODO: Add loging
+            notificator.sendInfoMsg('error', `Внутри showApptInfo произошла ошибка:\n${(error as Error).message}\nInfo:\nmode: ${this.mode}\nadminMode: ${this.adminMode}\nuserId: ${this.userId}`)
             text = 'Встреча не найдена. Произошла ошибка.'
             k = backButton
         }
@@ -48,8 +49,8 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 
         } catch (error)
         {
-            // TODO: Add loging
-            text = 'При попытке отменить встречу произошла ошибка. ПОпробуйте еще раз.'
+            notificator.sendInfoMsg('error', `Внутри cancelAppt произошла ошибка:\n${(error as Error).message}\nInfo:\nmode: ${this.mode}\nadminMode: ${this.adminMode}\nuserId: ${this.userId}`)
+            text = 'При попытке отменить встречу произошла ошибка. Попробуйте еще раз.'
         }
 
         ctx.editMessageText(text, { reply_markup: k })

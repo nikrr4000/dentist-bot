@@ -29,7 +29,6 @@ export default {
 	getSlotsByIds: (ids: number[]) => ApptSlots.findAll({ where: { id: { in: ids } } }),
 	getFindFunc: () => ({
 		findAll: (options?: FindOptions<ApptSlotsT> | undefined) => ApptSlots.findAll(options),
-		//TODO: Change getSlots and findOne to find object
 		findOne: (options?: FindOptions<ApptSlotsT> | undefined) => ApptSlots.findOne(options),
 	}),
 	getSlots(query: Partial<ApptSlotsT>) {

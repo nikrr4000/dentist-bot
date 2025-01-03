@@ -21,6 +21,7 @@ export interface SessionData {
   routeHistory: Array<routeHistoryUnit>; // Укажите тип элементов, если это строки, или другой тип, если необходимо
   lastMsgId: number;
   editMode: boolean;
+  isAdmin: boolean;
   conversation: object;
 }
 export type CallbackCtx = Filter<MyContext, "callback_query">;

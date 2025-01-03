@@ -56,13 +56,14 @@ const apptsServices = {
 	},
 	notificateAboutCancel: async (dataMap: Map<number, string>) => {
 		const baseText = 'Ваши записи:\n\n'
-		const notifResults = [] as Promise<Message.TextMessage>[]
+		const notifResultsPromises = [] as Promise<Message.TextMessage>[]
 		dataMap.forEach((value, key) => {
 			const infoText = `${baseText}${value}\nбыла отменена так как прием был закрыт.`
 			const notifRes = notificator.sendMessageById(infoText, key, mainMenu.menu)
-			notifResults.push(notifRes)
+			notifResultsPromises.push(notifRes)
 		})
-		// const
+		// TODO: count all success notifs
+		// const notifResults = await Promise.all(notifResultsPromises)
 	},
 	async cancelAppt(apptId: number) {
 		const transaction = await sequelize.transaction()
