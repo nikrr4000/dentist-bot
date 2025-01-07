@@ -20,7 +20,7 @@ export default async function (ctx: MyContext, next: NextFunction) {
     const isAdminCommand = adminCommands.includes(messText);
 
     if (
-        isTopic || !userIsAdmin
+        isTopic && !userIsAdmin
     )
     {
         return;

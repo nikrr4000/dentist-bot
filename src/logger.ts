@@ -8,3 +8,4 @@ const logger = {
     "trace": (text: string) => console.log(text),
 }
 export default logger;
+

@@ -1,5 +1,4 @@
 import { guardExp } from "#helpers/index.js";
-import startHandler from "#serviceMessages/startHandler.js";
 import type { NextFunction } from "grammy";
 import type { CallbackCtx } from "#types/grammy.types.js";
 import type { MyContext } from "#types/grammy.types.js";
