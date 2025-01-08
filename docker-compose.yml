@@ -2,6 +2,15 @@ version: '3'
 
 services:
 
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - mynetwork
+
   telegram_bot:
     build: .
     restart: always
@@ -15,21 +24,12 @@ services:
       DB_NAME: ${DB_NAME} 
       DB_USERNAME: ${DB_USERNAME} 
       DB_PASSWORD: ${DB_PASSWORD} 
-      DB_HOST: ${DB_HOST} 
-      DB_PORT: ${DB_PORT} 
+      DB_HOST: database  # Убедитесь, что это так
+      DB_PORT: 5432      # Убедитесь, что это так
     networks:
       - mynetwork
     depends_on:
       - database
-
-  database:
-    image: postgres
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    networks:
-      - mynetwork
 
 networks:
   mynetwork:
