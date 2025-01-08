@@ -20,7 +20,7 @@ export default async function (ctx: MyContext, next: NextFunction) {
     const isAdminCommand = adminCommands.includes(messText);
 
     if (
-        isTopic && !userIsAdmin
+        (isTopic && !userIsAdmin) || isSupergroup
     )
     {
         return;
@@ -28,11 +28,12 @@ export default async function (ctx: MyContext, next: NextFunction) {
 
     if (currentMsgId < lastMsgId || (lastMsgId === 0 && !isAdminCommand))
     {
-        if (isSupergroup)
-        {
-            return;
-        }
         return await startHandler(ctx);
+    }
+
+    if (isAdminCommand && !userIsAdmin)
+    {
+        return
     }
     ctx.session.lastMsgId = currentMsgId;
 
