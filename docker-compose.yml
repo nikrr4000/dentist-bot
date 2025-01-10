@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./src/dbSetup/init/init.sql
     networks:
       - mynetwork
 
@@ -24,8 +26,8 @@ services:
       DB_NAME: ${DB_NAME} 
       DB_USERNAME: ${DB_USERNAME} 
       DB_PASSWORD: ${DB_PASSWORD} 
-      DB_HOST: database  # Убедитесь, что это так
-      DB_PORT: 5432      # Убедитесь, что это так
+      DB_HOST: database
+      DB_PORT: 5432
     networks:
       - mynetwork
     depends_on:

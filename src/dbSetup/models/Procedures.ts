@@ -38,4 +38,9 @@ export default class Procedures extends Model<ProcedureT, ProcedureCreationT> {
 		type: DataType.INTEGER,
 	})
 	declare duration: number;
+
+	@Column({
+		type: DataType.INTEGER,
+	})
+	declare cost: number
 }
