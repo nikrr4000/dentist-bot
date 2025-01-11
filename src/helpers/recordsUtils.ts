@@ -11,9 +11,20 @@ import notificator from "./notificator.js"
 
 const recordServices = {
     cancelRecord: async (recordId: number) => {
+        const record = (await recordsCtrl.findFutureRecords({ id: recordId }))[0]
+        const user = await usersCtrl.find({ userId: record.userId }).one()
+
         const destroyRes = recordsCtrl.destroy({ id: recordId })
         await slotsServices(0).discardRecordSlots(recordId)
-        notificator.sendInfoMsg('record', 'Запись отменена "ДАННЫЕ О ЗАПИСИ"')
+
+        let text = 'Запись отменена:\n'
+        const date = dates.parseApptDate(record.Appointment.start)
+        text += `Дата приема: ${dates.getStrDateWithoutTime(date)}\n`
+        text += `Время приема: ${record.start} - ${record.end}\n`
+        text += `Пациент: ${user?.firstName} ${user?.secondName}, ${user?.username}`
+
+        notificator.sendInfoMsg('record', text)
+
         return true
     }
 }

@@ -14,7 +14,7 @@ const menuDenyConfirmK = (short = false) => {
 
 function greetingKeyboard() {
 	const keyboard = new InlineKeyboard()
-		.url("Моя группа", "https://t.me/zubsilaevoi")
+		.url("зубы даши силаевой", "https://t.me/zubsilaevoi")
 		.row()
 		.text("Доступные записи", "gen_appt-check_user")
 		.row()

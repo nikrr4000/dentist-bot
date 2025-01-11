@@ -13,7 +13,8 @@ export default async function startHandler(ctx: MyContext) {
 	guardExp(userId, "noId");
 
 	const user = await usersCtrl.find({ userId }).one();
-	if (!user) {
+	if (!user)
+	{
 		await ctx.conversation.enter("userReg");
 		return;
 	}
@@ -21,21 +22,23 @@ export default async function startHandler(ctx: MyContext) {
 }
 
 async function sendStartMessage(ctx: MyContext, user: UserT) {
-	try {
+	try
+	{
 		const h = sendStartMessageHelpers;
 
 		h.ctxFiller(ctx, user);
 		const greeting = h.createGreetingText(user.firstName);
 		const keyboard = greetingKeyboard();
 		return await smoothReplier(ctx, greeting, keyboard, "startHandler");
-	} catch (err) {
+	} catch (err)
+	{
 		errorHandler(err, "fatal", "Error inside startHandler");
 	}
 }
 
 const sendStartMessageHelpers = {
 	createGreetingText(firstName: string) {
-		const greeting = `Привет, ${firstName}.`;
+		const greeting = `Привет, ${firstName}!\nЗдесь можно записаться ко мне на прием, просто покликав кнопки. Если не хочешь кликать кнопки или есть вопросы - пиши сюда @darialalala`;
 		return greeting;
 	},
 	ctxFiller(ctx: MyContext, user: UserT) {

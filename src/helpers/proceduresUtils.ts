@@ -9,6 +9,12 @@ const proceduresInfoManager = {
 			acc.set(el.id, el.name)
 			return acc
 		}, new Map<number, string>())
+	},
+	getProceduresDescrList: async () => {
+		const descriptions = await proceduresCtrl.find().all()
+		const list = descriptions.map(procedure => `⚫️<b>${procedure.name}</b> — ${procedure.details} — <b>${procedure.cost}</b>`).join('\n')
+
+		return list
 	}
 };
 

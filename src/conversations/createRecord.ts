@@ -8,7 +8,7 @@ import { manageApptSlots, manageApptSlotsK } from "#helpers/apptSlotsUtils.js";
 import { apptsServices } from "#helpers/apptUtils.js";
 import guardExp from "#helpers/guardExp.js";
 import { handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
-import { proceduresKManager } from "#helpers/proceduresUtils.js";
+import { proceduresInfoManager, proceduresKManager } from "#helpers/proceduresUtils.js";
 import { createRecordTexts } from "#helpers/recordsUtils.js";
 import { mainMenu, menuDenyConfirmK } from "#keyboards/generalKeyboards.js";
 import startHandler from "#serviceMessages/startHandler.js";
@@ -68,9 +68,9 @@ export async function createRecord(
 
 const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 	texts: {
-		procedureId: "Выберите подходящую процедуру.",
+		procedureId: "Выберите подходящую процедуру:\n",
 		interval: "Выберите подходящее время.",
-		nointerval: 'Свободных записей не осталось на данную процедуру не осталось.',
+		nointerval: 'Свободных записей на данную процедуру не осталось.',
 		check: "Подтвердите правильность созданной записи:",
 		success: "Вы успешно записаны на прием.",
 		error: "Произошла ошибка при попытке зарегистрировать вашу запись. Зайдите позже."
@@ -78,9 +78,13 @@ const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 	apptId: ctx.session.temp.apptNumber,
 	async getProcedureId() {
 		const k = await proceduresKManager.getList();
-		await ctx.editMessageText(this.texts.procedureId, { reply_markup: k });
+		const descriptions = await proceduresInfoManager.getProceduresDescrList()
+		const t = `${this.texts.procedureId}${descriptions}`
+		await ctx.editMessageText(t, { reply_markup: k, parse_mode: 'HTML' });
+
 		const { callbackQuery: { data } } = await conversation.waitForCallbackQuery(/.+/);
 		const [label, id] = data.split("__")
+
 		return [label, Number(id)] as [string, number];
 	},
 	async getInterval(apptId: number, procedureId: number) {
