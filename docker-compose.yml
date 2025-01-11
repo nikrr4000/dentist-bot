@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - /home/nikrr/dentist-bot/src/dbSetup/init/init.sql
+      - /Users/nikrr/Documents/coding/dentist-bot/src/dbSetup/init/init.sql
     networks:
       - mynetwork
 

@@ -22,10 +22,33 @@ import Appointments from "#db/models/Appointments.js";
 import Records from "#db/models/Records.js";
 import isUserAdmin from "#middleware/isUserAdmin.js";
 import returner from "#middleware/returner.js";
+import Procedures from "#db/models/Procedures.js";
 
 (async () => {
 	await sequelize.sync({ alter: true });
 	logger.info("Database synced");
+	// FIXME: create start values via sql files 
+	Procedures.bulkCreate([
+		{
+			name: 'Лечение кариеса',
+			details: 'Осмотр, анестезия, постановка постоянной светоотверждаемой пломбы из композита',
+			duration: 6,
+			cost: 3500
+		},
+		{
+			name: 'Профессиональная гигиена',
+			details: 'Осмотр, удаление зубного камня ультразвуком, снятие пигментированного зубного налета аппаратом AirFlow, полирование поверхностей зубов щеткой с профессиональной пастой',
+			duration: 4,
+			cost: 4000
+		},
+		{
+			name: 'Лечение кариеса и проф. гигиена',
+			details: '',
+			duration: 8,
+			cost: 7000
+		}
+	])
+	logger.info("Values added");
 })();
 
 const token = sanitizedConfig.BOT_API_TOKEN;

@@ -6,6 +6,7 @@ export type ProcedureT = {
 	name: string;
 	details: string;
 	duration: number;
+	cost: number;
 };
 
 export type ProcedureCreationT = PartialBy<ProcedureT, "id">;
