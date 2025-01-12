@@ -38,7 +38,7 @@ async function sendStartMessage(ctx: MyContext, user: UserT) {
 
 const sendStartMessageHelpers = {
 	createGreetingText(firstName: string) {
-		const greeting = `Привет, ${firstName}!\nЗдесь можно записаться ко мне на прием, просто покликав кнопки. Если не хочешь кликать кнопки или есть вопросы - пиши сюда @darialalala`;
+		const greeting = `Привет, ${firstName}!\nЗдесь можно записаться ко мне на прием, просто покликав кнопки. Если не хочешь кликать кнопки или есть вопросы - пишиии сюда @darialalala`;
 		return greeting;
 	},
 	ctxFiller(ctx: MyContext, user: UserT) {

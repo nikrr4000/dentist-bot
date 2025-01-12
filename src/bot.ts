@@ -75,6 +75,8 @@ bot.use(returner)
 bot.use(traceRoutes);
 bot.use(keyboard);
 
+bot.api.sendMessage(335815247, 'check')
+
 bot.command("admin", async (ctx) => {
 	try
 	{
@@ -84,27 +86,6 @@ bot.command("admin", async (ctx) => {
 		logErrorAndThrow(err, "fatal", "unable to send sendAdminMenu");
 	}
 });
-
-bot.command('apptsclear', async (ctx) => {
-	await Records.truncate({ cascade: true })
-	await ApptSlots.truncate({ cascade: true })
-	await Appointments.truncate({ cascade: true })
-	await ctx.reply('Все записи удалены')
-	startHandler(ctx)
-})
-
-bot.command('recordsclear', async (ctx) => {
-	const { userId } = ctx
-	const record = await Records.findOne({ where: { userId } })
-	if (!record)
-	{
-		return ctx.reply('нет существующих записей на этот id')
-	}
-	await Records.destroy({ where: { userId } })
-	await ApptSlots.update({ recordId: 0 }, { where: { recordId: record.id } })
-	await ctx.reply('Информация о записях стерта')
-	startHandler(ctx)
-})
 
 bot.command("start", async (ctx: MyContext) => {
 	try
