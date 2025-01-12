@@ -15,6 +15,6 @@ jobs:
 
       - name: Send signal to VM
         run: |
-          ssh user@your-vm-ip 'bash -s' < ./scripts/deploy.sh
+          ssh ${{ vars.VM_USERNAME }}@${{ vars.VM_IP }} 'bash -s' < ./scripts/deploy.sh
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
