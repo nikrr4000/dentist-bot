@@ -75,7 +75,7 @@ bot.use(returner)
 bot.use(traceRoutes);
 bot.use(keyboard);
 
-bot.api.sendMessage(335815247, 'checks')
+bot.api.sendMessage(335815247, 'checkssss')
 
 bot.command("admin", async (ctx) => {
 	try
