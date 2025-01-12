@@ -7,7 +7,7 @@ import type { RecordCreationT } from "#db/models/Records.js";
 import { manageApptSlots, manageApptSlotsK } from "#helpers/apptSlotsUtils.js";
 import { apptsServices } from "#helpers/apptUtils.js";
 import guardExp from "#helpers/guardExp.js";
-import { handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
+import { addMainMenuButton, handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
 import { proceduresInfoManager, proceduresKManager } from "#helpers/proceduresUtils.js";
 import { createRecordTexts } from "#helpers/recordsUtils.js";
 import { mainMenu, menuDenyConfirmK } from "#keyboards/generalKeyboards.js";
@@ -78,9 +78,10 @@ const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 	apptId: ctx.session.temp.apptNumber,
 	async getProcedureId() {
 		const k = await proceduresKManager.getList();
+		const kWithMenu = addMainMenuButton(k)
 		const descriptions = await proceduresInfoManager.getProceduresDescrList()
 		const t = `${this.texts.procedureId}${descriptions}`
-		await ctx.editMessageText(t, { reply_markup: k, parse_mode: 'HTML' });
+		await ctx.editMessageText(t, { reply_markup: kWithMenu, parse_mode: 'HTML' });
 
 		const { callbackQuery: { data } } = await conversation.waitForCallbackQuery(/.+/);
 		const [label, id] = data.split("__")
@@ -93,7 +94,7 @@ const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 
 		const mapSize = textWithIdMap.size
 
-		const k = mapSize === 0 ? mainMenu.menu : manageApptSlotsK.createButtons(textWithIdMap);
+		const k = mapSize === 0 ? mainMenu.menu : addMainMenuButton(manageApptSlotsK.createButtons(textWithIdMap));
 		const text = mapSize === 0 ? this.texts.nointerval : this.texts.interval;
 
 		await ctx.editMessageText(text, { reply_markup: k });
