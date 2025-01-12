@@ -13,15 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ vars.VM_IP }} >> ~/.ssh/known_hosts
-          eval "$(ssh-agent -s)"  # Запуск SSH-агента
-          ssh-add ~/.ssh/id_rsa   # Добавление ключа в SSH-агент
-
       - name: Send signal to VM
         run: |
           ssh ${{ vars.VM_USERNAME }}@${{ vars.VM_IP }} 'bash -s' < ./scripts/deploy.sh
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
