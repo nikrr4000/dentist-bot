@@ -35,7 +35,7 @@ const createRecordTexts = {
         text += `🦷${procedureName}\n`
         text += `🕔${slotInterval}\n`
         text += `📍${place}\n`
-        return [place, date, procedureName, slotInterval].join('\n')
+        return text
     },
     getStartEndStr: (ds: [Date, Date]) => {
         return ds.map(date => dates.getStrDateWithoutDate(dates.parseApptDate(date)).trim())
