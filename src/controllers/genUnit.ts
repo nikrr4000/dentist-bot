@@ -47,7 +47,8 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 		text += records.map(record => {
 			const apptDate = dates.parseApptDate(record.Appointment.start)
 			const apptDateDay = dates.getStrDateWithoutTime(apptDate)
-			const slotInterval = `${record.start} - ${record.end}`
+			const parsedDateAndCutDate = (date: Date) => dates.getStrDateWithoutDate(dates.parseApptDate(date))
+			const slotInterval = `${parsedDateAndCutDate(record.start)} - ${parsedDateAndCutDate(record.end)}`
 
 			return createRecordTexts.basicText(record.Appointment.place, apptDateDay, record.Procedure.name, slotInterval)
 		}).join('\n\n')
