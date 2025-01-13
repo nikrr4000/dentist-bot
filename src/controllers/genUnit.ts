@@ -54,7 +54,6 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 			return createRecordTexts.basicText(record.Appointment.place, apptDateDay, record.Procedure.name, slotInterval)
 		}).join('\n\n')
 
-		notificator.sendInfoMsg('info', records.map(createRecordTexts.recordInfo).join('\n\n'))
 		const k = createRecordKs.basic(records, false).row().text('Назад', 'back')
 
 		await ctx.editMessageText(text, { reply_markup: k })
