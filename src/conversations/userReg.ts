@@ -3,6 +3,7 @@ import logErrorAndThrow from "#handlers/logErrorAndThrow.js";
 import startHandler from "#serviceMessages/startHandler.js";
 import type { MyContext, MyConversation } from "#types/grammy.types.js";
 import UsersCtrl from "#db/handlers/usersCtrl.js";
+import notificator from "#helpers/notificator.js";
 
 export default async function userReg(
 	conversation: MyConversation,
@@ -27,15 +28,19 @@ export default async function userReg(
 		);
 
 		guardExp(ctx.from?.id, "user_id inside userRegistrationConv");
-
-		await UsersCtrl.create({
+		const userData = {
 			userId: ctx.userId,
 			firstName,
 			secondName,
 			username: ctx.from.username || "uknown",
-		});
+		}
+
+		await UsersCtrl.create(userData);
 
 		const lastMsgId = await startHandler(ctx);
+		notificator.sendInfoMsg('info',
+			`Был зарегистрирован новый пользователь:\nИмя: ${userData.firstName} ${userData.secondName}\n@${userData.username}`
+		)
 		conversation.session.lastMsgId = lastMsgId || 0;
 	} catch (err)
 	{

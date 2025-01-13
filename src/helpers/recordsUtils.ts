@@ -40,9 +40,10 @@ const createRecordTexts = {
         const [start, end] = this.getStartEndStr([record.start, record.end])
         const date = dates.getStrDateWithoutTime(dates.parseApptDate(record.start))
 
-        let text = `📍${date}\n`
-        text += `${record.Procedure.name}\n`
-        text += `${start} - ${end}\n`
+        let text = `🗓${date}\n`
+        text += `🦷${record.Procedure.name}\n`
+        text += `🕔${start} - ${end}\n`
+        text += `📍${record.place}\n`
 
         return text
     },
