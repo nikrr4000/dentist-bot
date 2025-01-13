@@ -44,7 +44,7 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 		const records = await recordsCtrl.findFutureRecords({ userId })
 
 		let text = 'На данный момент вы записаны на следующие приемы:\n\n'
-		text += records.map(async record => {
+		text += await records.map(async record => {
 			const apptDate = dates.parseApptDate(record.Appointment.start)
 			const apptDateDay = dates.getStrDateWithoutTime(apptDate)
 			const slotInterval = `${record.start} - ${record.end}`
