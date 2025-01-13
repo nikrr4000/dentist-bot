@@ -31,6 +31,10 @@ const recordServices = {
 
 const createRecordTexts = {
     basicText: (place: string, date: string, procedureName: string, slotInterval: string) => {
+        let text = `🗓${date}\n`
+        text += `🦷${procedureName}\n`
+        text += `🕔${slotInterval}\n`
+        text += `📍${place}\n`
         return [place, date, procedureName, slotInterval].join('\n')
     },
     getStartEndStr: (ds: [Date, Date]) => {
