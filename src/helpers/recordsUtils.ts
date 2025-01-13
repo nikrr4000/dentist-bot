@@ -43,7 +43,7 @@ const createRecordTexts = {
         let text = `🗓${date}\n`
         text += `🦷${record.Procedure.name}\n`
         text += `🕔${start} - ${end}\n`
-        text += `📍${record.place}\n`
+        text += `📍${record.Appointment.place}\n`
 
         return text
     },
