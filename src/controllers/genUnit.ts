@@ -49,7 +49,7 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 			const apptDateDay = dates.getStrDateWithoutTime(apptDate)
 			const slotInterval = `${record.start} - ${record.end}`
 
-			createRecordTexts.basicText(record.place, apptDateDay, record.Procedure.name, slotInterval)
+			createRecordTexts.basicText(record.Appointment.place, apptDateDay, record.Procedure.name, slotInterval)
 		}).join('\n\n')
 		const k = createRecordKs.basic(records, false).row().text('Назад', 'back')
 
