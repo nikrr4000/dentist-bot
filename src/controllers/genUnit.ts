@@ -44,7 +44,14 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 		const records = await recordsCtrl.findFutureRecords({ userId })
 
 		let text = 'На данный момент вы записаны на следующие приемы:\n\n'
-		text += records.map(createRecordTexts.recordInfo).join('\n\n')
+		text += records.map(record => {
+			const apptDate = dates.parseApptDate(record.Appointment.start)
+			const apptDateDay = dates.getStrDateWithoutTime(apptDate)
+			const parsedDateAndCutDate = (date: Date) => dates.getStrDateWithoutDate(dates.parseApptDate(date))
+			const slotInterval = `${parsedDateAndCutDate(record.start)} - ${parsedDateAndCutDate(record.end)}`
+
+			return createRecordTexts.basicText(record.Appointment.place, apptDateDay, record.Procedure.name, slotInterval)
+		}).join('\n\n')
 		const k = createRecordKs.basic(records, false).row().text('Назад', 'back')
 
 		await ctx.editMessageText(text, { reply_markup: k })
