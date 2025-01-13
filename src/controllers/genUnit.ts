@@ -2,6 +2,7 @@ import apptCtrl from "#db/handlers/apptCtrl.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import { apptsKServices, createRecordKs, createRecordTexts, dates } from "#helpers/index.js";
 import { addBackButton } from "#helpers/keyboardUtils.js";
+import notificator from "#helpers/notificator.js";
 import { backButton } from "#keyboards/generalKeyboards.js";
 import type { MyContext } from "#types/grammy.types.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
@@ -52,6 +53,8 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 
 			return createRecordTexts.basicText(record.Appointment.place, apptDateDay, record.Procedure.name, slotInterval)
 		}).join('\n\n')
+
+		notificator.sendInfoMsg('info', records.map(createRecordTexts.recordInfo).join('\n\n'))
 		const k = createRecordKs.basic(records, false).row().text('Назад', 'back')
 
 		await ctx.editMessageText(text, { reply_markup: k })
