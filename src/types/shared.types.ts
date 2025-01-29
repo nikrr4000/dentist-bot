@@ -37,3 +37,8 @@ export type operationLog = {
 	status: 'ok' | Error,
 	details: undefined | string
 }
+
+export type taskT = {
+	expression: string;
+	task: () => Promise<void>;
+}

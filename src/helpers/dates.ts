@@ -19,9 +19,21 @@ export default {
 		const currDate = this.currDate();
 		return currDate > dateToCheck;
 	},
+	getTomorrowDate() {
+		const momentDate = moment().utc().add(1, "days").startOf("day");
+		return {
+			momentDate: momentDate,
+			dateType: momentDate.toDate()
+		};
+	},
+	getTomorrowDateRange() {
+		const tomorrowStart = this.getTomorrowDate().dateType.setHours(0, 0, 0, 0);
+		const tomorrowEnd = new Date(tomorrowStart).setHours(23, 59, 59, 999);
+		return { start: tomorrowStart, end: tomorrowEnd }
+	},
 	dateIsTomorrow: function isTomorrow(dateStr: string) {
 		const inputDate = moment.utc(dateStr);
-		const tomorrow = moment().utc().add(1, "days").startOf("day");
+		const tomorrow = this.getTomorrowDate().momentDate;
 
 		return inputDate.isSame(tomorrow, "day");
 	},

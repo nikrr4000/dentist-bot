@@ -17,6 +17,9 @@ const apptsServices = {
 	futureAppts() {
 		return apptCtrl.findFutureAppts();
 	},
+	getTomorrowAppts() {
+		return apptCtrl.findTomorrowAppt();
+	},
 	async getAvailableAppts(isAdmin: boolean) {
 		const apptsList = await this.futureAppts();
 		guardExp(apptsList, "apptsList inside getAvailableAppts");

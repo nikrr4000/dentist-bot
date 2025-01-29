@@ -86,7 +86,7 @@ keyboard.callbackQuery(/appt_/, async (ctx) => {
 });
 
 keyboard.callbackQuery(/record_/, async (ctx) => {
-	type actionMap = "create" | 'check' | 'cancel';
+	type actionMap = "create" | 'check' | 'cancel' | 'confirm';
 
 	const actionsMap: Record<
 		actionMap,
@@ -98,7 +98,8 @@ keyboard.callbackQuery(/record_/, async (ctx) => {
 			await ctx.conversation.enter("createRecord");
 		},
 		check: async (ctx, ...args) => recordsUnit(ctx, ...args).showRecordInfo(),
-		cancel: async (ctx, ...args) => recordsUnit(ctx, ...args).cancelRecord()
+		cancel: async (ctx, ...args) => recordsUnit(ctx, ...args).cancelRecord(),
+		confirm: async (ctx, ...args) => recordsUnit(ctx, ...args).confirmRecord()
 	};
 
 	const [_, actionName, actionMode, pathId, userId] =

@@ -4,7 +4,7 @@ import type { RecordAppointmentProcedureT, RecordProcedureT } from "#types/share
 import { InlineKeyboard } from "grammy"
 import { slotsServices } from "./apptSlotsUtils.js"
 import dates from "./dates.js"
-import { keyboardFromData } from "./keyboardUtils.js"
+import { addMainMenuButton, keyboardFromData } from "./keyboardUtils.js"
 import { usersInfoManager } from "./usersUtils.js"
 import type { RecordT } from "#db/models/Records.js"
 import notificator from "./notificator.js"
@@ -17,15 +17,32 @@ const recordServices = {
         const destroyRes = recordsCtrl.destroy({ id: recordId })
         await slotsServices(0).discardRecordSlots(recordId)
 
+        const [start, end] = [record.start, record.end].map(el => dates.getStrDateWithoutDate(dates.parseApptDate(el)))
+
         let text = 'Запись отменена:\n'
         const date = dates.parseApptDate(record.Appointment.start)
         text += `Дата приема: ${dates.getStrDateWithoutTime(date)}\n`
-        text += `Время приема: ${record.start} - ${record.end}\n`
-        text += `Пациент: ${user?.firstName} ${user?.secondName}, ${user?.username}`
+        text += `Время приема: ${start} - ${end}\n`
+        text += `Пациент: ${user?.firstName} ${user?.secondName}, \n@${user?.username}`
 
         notificator.sendInfoMsg('record', text)
 
         return true
+    },
+    async notificateAboutAppt(apptId: number) {
+        const records = await recordsCtrl.findFutureRecords({ apptId });
+        if (!records.length) return
+        let text = 'Вы записаны на следующую запись.\n'
+        text += createRecordTexts.recordInfo(records[0])
+        text += 'Подтвердите её или она будет автоматически отменена.'
+
+        for (const record of records)
+        {
+            const userId = record.userId
+            const k = createRecordKs.confirmCancel(record)
+            // Add check if all messages were sent
+            notificator.sendMessageById(text, userId, k)
+        }
     }
 }
 
@@ -95,11 +112,19 @@ const createRecordKs = {
     },
     getRecordActions: (record: RecordT) => {
         const k = new InlineKeyboard()
-            .text('Отменить запись', `record_cancel_admin__${record.id}_${record.userId}`)
+            .text('Отменить запись', `record_cancel_user__${record.id}_${record.userId}`)
             .row()
 
         return k.text('Назад', 'back')
-    }
+    },
+    confirmCancel: (record: RecordT) => {
+        const k = new InlineKeyboard()
+            .text('Отменить запись', `record_cancel_user__${record.id}_${record.userId}`)
+            .text('Подтвердить', 'record_confirm_user')
+
+        return addMainMenuButton(k)
+    },
+
 }
 
 export { recordServices, createRecordTexts, createRecordKs }

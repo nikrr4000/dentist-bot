@@ -38,11 +38,17 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
         {
             await recordServices.cancelRecord(+this.pathId)
 
-            text = 'Запись успешно удалена'
+            text = 'Запись успешно отменена.'
         } catch (error)
         {
-            text = 'При удалении произошла ошибка. Попробуйте позже'
+            text = 'При удалении произошла ошибка. Попробуйте позже.'
         }
         ctx.editMessageText(text, { reply_markup: k })
-    }
+    },
+    confirmRecord() {
+        // TODO: Add logging
+        const text = 'Запись успешно подтверждена.'
+        const k = mainMenu.menu
+        ctx.editMessageText(text, { reply_markup: k })
+    },
 })

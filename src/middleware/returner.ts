@@ -28,7 +28,13 @@ export default async function (ctx: MyContext, next: NextFunction) {
 
     if (currentMsgId < lastMsgId || (lastMsgId === 0 && !isAdminCommand))
     {
-        return await startHandler(ctx);
+        const dataUnit = ctx.callbackQuery?.data?.split("__") || [];
+        // TODO: create storage of commands that shouldn't be cleared with this return check
+        if (shouldReturn(dataUnit[0]))
+        {
+            console.log('return!');
+            return await startHandler(ctx);
+        }
     }
 
     if (isAdminCommand && !userIsAdmin)
@@ -38,4 +44,11 @@ export default async function (ctx: MyContext, next: NextFunction) {
     ctx.session.lastMsgId = currentMsgId;
 
     await next();
+}
+
+const shouldReturn = (str: string) => {
+    console.log('should i return?', str);
+
+    const regExp = /record_(cancel|confirm)_user/;
+    return !regExp.test(str);
 }

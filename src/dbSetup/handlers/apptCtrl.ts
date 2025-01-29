@@ -42,6 +42,17 @@ export default {
 			return opResult;
 		}
 	},
+	findTomorrowAppt() {
+		const { start, end } = dates.getTomorrowDateRange()
+		return Appointments.findOne({
+			where: {
+				start: {
+					[Op.gte]: start,
+					[Op.lt]: end
+				}
+			}
+		})
+	},
 	findOne(query?: Partial<AppointmentT>) {
 		return Appointments.findOne({ where: query });
 	},

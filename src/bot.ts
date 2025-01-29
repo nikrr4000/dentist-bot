@@ -17,24 +17,19 @@ import userReg from "#conv/userReg.js";
 import sendAdminMenu from "#serviceMessages/sendAdminMenu.js";
 import { keyboard } from "#handlers/buttonRouters.js";
 import { createRecord } from "#conv/createRecord.js";
-import ApptSlots from "#db/models/ApptSlots.js";
-import Appointments from "#db/models/Appointments.js";
-import Records from "#db/models/Records.js";
 import isUserAdmin from "#middleware/isUserAdmin.js";
 import returner from "#middleware/returner.js";
-import Procedures from "#db/models/Procedures.js";
+import CronScheduler from "./cron/CronScheduler.js";
 
 (async () => {
 	await sequelize.sync({ alter: true });
 	logger.info("Database synced");
+	new CronScheduler()
 	// FIXME: create start values via sql files 
 })();
 
 const token = sanitizedConfig.BOT_API_TOKEN;
-if (!token)
-{
-	throw new Error("There is no bot token");
-}
+
 export const bot = new Bot<MyContext>(token);
 bot.api.config.use(hydrateFiles(token));
 export const admin = new Api(token);
