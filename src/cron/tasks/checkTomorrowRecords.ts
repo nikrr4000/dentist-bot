@@ -1,4 +1,5 @@
 import apptCtrl from "#db/handlers/apptCtrl.js";
+import notificator from "#helpers/notificator.js";
 import { recordServices } from "#helpers/recordsUtils.js";
 
 export default {
@@ -7,7 +8,15 @@ export default {
         const tomorrowAppt = await apptCtrl.findTomorrowAppt();
         if (tomorrowAppt)
         {
-            recordServices.notificateAboutAppt(tomorrowAppt.id)
+            try
+            {
+
+                await recordServices.notificateAboutAppt(tomorrowAppt.id)
+                await notificator.sendInfoMsg('info', 'Была создана рассылка для подтверждения записи.')
+            } catch (error)
+            {
+                notificator.sendInfoMsg('error', `Во время попытки создать рассылку для подтверждения записи произошла ошибка:\n\n${error}`)
+            }
         }
     }
 }
