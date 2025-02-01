@@ -1,11 +1,18 @@
+import notificator from "#helpers/notificator.js";
+
 //FIXME, here was pino but it returned error "has no callable signature"
 const logger = {
-    "fatal": (text: string) => console.log(text),
-    "error": (text: string) => console.log(text),
-    "warn": (text: string) => console.log(text),
-    "info": (text: string) => console.log(text),
-    "debug": (text: string) => console.log(text),
-    "trace": (text: string) => console.log(text),
+    "fatal": (text: string) => logFunc(text),
+    "error": (text: string) => logFunc(text),
+    "warn": (text: string) => logFunc(text),
+    "info": (text: string) => logFunc(text),
+    "debug": (text: string) => logFunc(text),
+    "trace": (text: string) => logFunc(text),
 }
-export default logger;
 
+const logFunc = (text: string) => {
+    notificator.sendInfoMsg('info', text)
+    console.log(text)
+}
+
+export default logger;

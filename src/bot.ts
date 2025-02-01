@@ -96,7 +96,7 @@ bot.catch((err) => {
 	{
 		logger.fatal(`Unknown error:\n${e}`);
 	}
-	ctx.reply("На данный момент бот на покое.", { reply_markup: mainMenu.menu });
+	ctx.reply("Произошла ошибка. Зайдите позже.", { reply_markup: mainMenu.menu });
 });
 
 bot.start();

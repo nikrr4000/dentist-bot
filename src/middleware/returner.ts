@@ -32,7 +32,6 @@ export default async function (ctx: MyContext, next: NextFunction) {
         // TODO: create storage of commands that shouldn't be cleared with this return check
         if (shouldReturn(dataUnit[0]))
         {
-            console.log('return!');
             return await startHandler(ctx);
         }
     }
@@ -47,8 +46,6 @@ export default async function (ctx: MyContext, next: NextFunction) {
 }
 
 const shouldReturn = (str: string) => {
-    console.log('should i return?', str);
-
     const regExp = /record_(cancel|confirm)_user/;
     return !regExp.test(str);
 }
