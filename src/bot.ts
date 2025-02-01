@@ -20,6 +20,7 @@ import { createRecord } from "#conv/createRecord.js";
 import isUserAdmin from "#middleware/isUserAdmin.js";
 import returner from "#middleware/returner.js";
 import CronScheduler from "./cron/CronScheduler.js";
+import notificator from "#helpers/notificator.js";
 
 (async () => {
 	await sequelize.sync({ alter: true });
@@ -48,6 +49,8 @@ bot.use(ctxExtender);
 bot.use(returner)
 bot.use(traceRoutes);
 bot.use(keyboard);
+
+notificator.sendInfoMsg('info', 'Обновил контейнер')
 
 bot.command("admin", async (ctx) => {
 	try
