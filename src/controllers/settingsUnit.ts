@@ -45,7 +45,7 @@ const showSettingsH = ({ user }: settingsDataT) => ({
     createKeyboard: function () {
         return addMainMenuButton(new InlineKeyboard().text(...this.createData('Изменить имя', 'change-name'))
             .row()
-            .text(...this.createData(`${this.getSubEmoji}${this.getSubButtonText}`, 'switch-sub')))
+            .text(...this.createData(`${this.getSubButtonText}`, 'switch-sub')))
     },
     createData: function (label: string, action: string) {
         const data: dataStructure = { path: 'settings', action: action, mode: 'user', pathId: this.getBit, userId: user.userId }
