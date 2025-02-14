@@ -4,25 +4,29 @@ import logger from "#root/logger.js";
 import logErrorAndThrow from "#handlers/logErrorAndThrow.js";
 import type { MyContext } from "#types/grammy.types.js";
 
-export default async function (
+export async function smoothReplier(
 	ctx: MyContext,
 	messageText: string,
 	keyboard: InlineKeyboard | undefined,
 	fnName: string,
 ) {
 	let updatedCtx: updatedCtxType;
-	try {
-		try {
+	try
+	{
+		try
+		{
 			updatedCtx = await ctx.editMessageText(messageText, {
 				reply_markup: keyboard,
 				parse_mode: "HTML",
 			});
 			return messageIdSaver(ctx, updatedCtx, fnName);
-		} catch (err) {
+		} catch (err)
+		{
 			const error = err as Error;
 			if (
-				error.message.match(/message is not modified|message can't be edited/)
-			) {
+				error.message.match(/message is not modified|message can't be edited|message to edit not found/)
+			)
+			{
 				updatedCtx = await ctx.reply(messageText, {
 					reply_markup: keyboard,
 					parse_mode: "HTML",
@@ -31,7 +35,8 @@ export default async function (
 			}
 			throw new Error(`bot can't edit and reply:\n ${error}`);
 		}
-	} catch (err) {
+	} catch (err)
+	{
 		logErrorAndThrow(
 			err,
 			"fatal",
@@ -45,7 +50,8 @@ const messageIdSaver = (
 	updatedCtx: updatedCtxType,
 	fnName: string,
 ) => {
-	if (updatedCtx && typeof updatedCtx !== "boolean") {
+	if (updatedCtx && typeof updatedCtx !== "boolean")
+	{
 		ctx.session.lastMsgId = updatedCtx.message_id;
 		return updatedCtx.message_id;
 	}
@@ -56,6 +62,6 @@ type updatedCtxType =
 	| Message.TextMessage
 	| true
 	| (Update.Edited &
-			Message.CommonMessage & {
-				text: string;
-			});
+		Message.CommonMessage & {
+			text: string;
+		});

@@ -1,6 +1,6 @@
 import apptCtrl from "#db/handlers/apptCtrl.js";
 import notificator from "#helpers/notificator.js";
-import { recordServices } from "#helpers/recordsUtils.js";
+import { recordServices } from "#helpers/index.js";
 
 export default {
     expression: '0 0 19 * * *',

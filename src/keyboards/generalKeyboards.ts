@@ -18,7 +18,9 @@ function greetingKeyboard() {
 		.row()
 		.text("Доступные записи", "gen_appt-check_user")
 		.row()
-		.text('Ваши записи', "gen_records-check_user");
+		.text('Ваши записи', "gen_records-check_user")
+		.row()
+		.text('Настройки', 'gen_settings');
 	return keyboard;
 }
 

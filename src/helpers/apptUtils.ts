@@ -4,14 +4,14 @@ import type { AppointmentT } from "#db/models/Appointments.js";
 import type { ApptSlotsT } from "#db/models/ApptSlots.js";
 import { InlineKeyboard } from "grammy";
 import dates from "./dates.js";
-import guardExp from "./guardExp.js";
-import { keyboardFromData } from "./keyboardUtils.js";
+import { constructDefaultButtonsData, keyboardFromData } from "./keyboardUtils.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import { createRecordTexts } from "./recordsUtils.js";
 import { sequelize } from "#db/dbClient.js";
 import notificator from "./notificator.js";
 import { mainMenu } from "#keyboards/generalKeyboards.js";
 import type { Message } from "grammy/types";
+import { guardExp } from "./index.js";
 
 const apptsServices = {
 	futureAppts() {
@@ -38,11 +38,11 @@ const apptsServices = {
 			})
 			.map((el) => el[0]);
 	},
-	getApptDateText: (appt: AppointmentT) => {
+	getApptDateText: (appt: Omit<AppointmentT, "id" | "ended">) => {
 		const dateStr = dates.parseApptDate(appt.start)
 		return dates.getStrDateWithoutTime(dateStr)
 	},
-	createApptInfo: (appt: AppointmentT) => {
+	createApptInfo: (appt: Omit<AppointmentT, "id" | "ended">) => {
 		const dateStart = dates.parseApptDate(appt.start)
 		const dateEnd = dates.parseApptDate(appt.end)
 
@@ -101,20 +101,27 @@ const apptsServices = {
 	}
 };
 
+interface CreateBasicKeyboardOptionalParams {
+	userId?: number;
+	appts?: AppointmentT[];
+}
+
 const apptsKServices = {
 	getTextButtons: (appts: AppointmentT[]) =>
 		appts.map(apptsServices.getApptDateText),
-	async createBasicKeyboard(path: string, action: string, adminMode: boolean, userId: number) {
+	async createBasicKeyboard(path: string, action: string, adminMode: boolean, optionalParams?: CreateBasicKeyboardOptionalParams) {
+		let { userId, appts } = optionalParams || {};
 		const mode = adminMode ? "admin" : "user";
-		const textData = await apptsServices.getAvailableAppts(adminMode);
-		const kTexts = textData.flatMap((el) => this.getTextButtons([el]));
+		if (!appts)
+		{
+			appts = await apptsServices.getAvailableAppts(adminMode);
+		}
 
-		const keyboardData = textData.map((appt, inx) => {
-			return [kTexts[inx], `${path}_${action}_${mode}_${appt.id}_${userId}`] as [
-				string,
-				string,
-			];
-		});
+		const kTexts = appts.flatMap((el) => this.getTextButtons([el]));
+		const keyboardDataStructures = appts.map(appt => ({ path, action, mode, pathId: appt.id, userId }))
+
+		const keyboardData = constructDefaultButtonsData(kTexts, keyboardDataStructures);
+
 		return keyboardFromData(keyboardData);
 	},
 	getApptActions: (appt: AppointmentT) => {
@@ -123,7 +130,8 @@ const apptsKServices = {
 			.row()
 
 		return k.text('Назад', 'back')
-	}
+	},
 };
+
 
 export { apptsServices, apptsKServices };

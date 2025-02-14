@@ -3,7 +3,7 @@ import proceduresCtrl from "#db/handlers/proceduresCtrl.js";
 import type { ApptSlotsT } from "#db/models/ApptSlots.js";
 import { InlineKeyboard } from "grammy";
 import dates from "./dates.js";
-import guardExp from "./guardExp.js";
+import { guardExp } from "./index.js";
 
 type idsWithText = Map<string, string>;
 

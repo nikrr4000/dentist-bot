@@ -2,13 +2,16 @@ import logger from "#root/logger.js";
 import type { MyContext, MyConversation } from "#types/grammy.types.js";
 import sendAdminMenu from "#serviceMessages/sendAdminMenu.js";
 import { menuDenyConfirmK } from "#keyboards/generalKeyboards.js";
-import { handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
-import type { AppointmentCreationT } from "#db/models/Appointments.js";
+import { addMainMenuButton, handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
+import type { AppointmentCreationT, AppointmentT } from "#db/models/Appointments.js";
 import dates from "#helpers/dates.js";
 import apptCtrl from "#db/handlers/apptCtrl.js";
 import logErrorAndThrow from "#handlers/logErrorAndThrow.js";
 import { adminMenu } from "#keyboards/index.js";
 import unlessActions from "./helpers/unlessActions.js";
+import usersCtrl from "#db/handlers/usersCtrl.js";
+import notificator from "#helpers/notificator.js";
+import { apptsKServices, apptsServices } from "#helpers/index.js";
 
 type apptInfoGatheringT = {
 	[key: string]: string;
@@ -85,6 +88,7 @@ const apptHs = (ctx: MyContext, conversation: MyConversation) => ({
 			if (result.status === "ok")
 			{
 				this.sendSuccessMessage();
+				if (result.firstOp) this.notificateUsers(result.firstOp)
 				return;
 			}
 			throw new Error(result.details);
@@ -97,6 +101,17 @@ const apptHs = (ctx: MyContext, conversation: MyConversation) => ({
 		const { chatId, message_id } = this.dataForEdit
 
 		ctx.api.editMessageText(chatId, message_id, "Запись успешно открыта", { reply_markup: adminMenu.menu });
+	},
+	notificateUsers: async (appt: AppointmentT) => {
+		const users = await usersCtrl.find({ newApptsSub: true }).all()
+		const userIds = users.map(user => user.userId)
+
+		let text = 'Была открыта новая запись:\n'
+		text += apptsServices.createApptInfo(appt)
+
+		const k = await apptsKServices.createBasicKeyboard('record', 'create', false, { appts: [appt] })
+
+		notificator.sendBulkMessages(text, userIds, addMainMenuButton(k))
 	},
 	falseAnswerHandler: async () => {
 		await sendAdminMenu(ctx);

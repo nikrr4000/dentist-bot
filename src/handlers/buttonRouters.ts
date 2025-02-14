@@ -3,17 +3,15 @@ import type { MyContext } from "#types/grammy.types.js";
 import { Composer } from "grammy";
 import logErrorAndThrow from "./logErrorAndThrow.js";
 import { callbackDataSplitter } from "#helpers/keyboardUtils.js";
-import { genUnit } from "#controllers/index.js";
 import sendAdminMenu from "#serviceMessages/sendAdminMenu.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
-import guardExp from "#helpers/guardExp.js";
-import apptUnit from "#controllers/apptUnit.js";
-import recordsUnit from "#controllers/recordsUnit.js";
+import { guardExp } from "#helpers/guardExp.js";
+import { genUnit, settingsUnit, recordsUnit, apptUnit } from "#controllers/index.js";
 
 export const keyboard = new Composer<MyContext>();
 
 keyboard.callbackQuery(/gen_/, async (ctx) => {
-	type actionMap = "appt-check" | "admin-menu" | 'main-menu' | 'records-check';
+	type actionMap = "appt-check" | "admin-menu" | 'main-menu' | 'records-check' | 'settings';
 
 	const actionsMap: Record<
 		actionMap,
@@ -22,7 +20,8 @@ keyboard.callbackQuery(/gen_/, async (ctx) => {
 		"appt-check": async (ctx, ...args) => genUnit(ctx, ...args).showApptMenu(),
 		'admin-menu': async (ctx, ...args) => sendAdminMenu(ctx),
 		'main-menu': async (ctx, ...args) => { startHandler(ctx) },
-		'records-check': async (ctx, ...args) => genUnit(ctx, ...args).showSchedule()
+		'records-check': async (ctx, ...args) => genUnit(ctx, ...args).showSchedule(),
+		'settings': async (ctx, ...args) => genUnit(ctx, ...args).showSettings()
 	};
 
 	// TODO: Add more strict typing: third and fourth types acn be undefined
@@ -48,6 +47,40 @@ keyboard.callbackQuery(/gen_/, async (ctx) => {
 		await startHandler(ctx);
 	}
 });
+
+keyboard.callbackQuery(/settings_/, async (ctx) => {
+	type actionMap = "switch-sub" | 'change-name'
+
+	const actionsMap: Record<
+		actionMap,
+		(ctx: MyContext, ...args: basicCallbackArgs) => Promise<void>
+	> = {
+		'switch-sub': async (ctx, ...args) => settingsUnit(ctx, ...args).switchSub(),
+		'change-name': async (ctx, ...args) => settingsUnit(ctx, ...args).changeName(),
+	};
+
+	const [_, actionName, actionMode, pathId, userId] =
+		callbackDataSplitter<actionMap>(ctx);
+
+	const action = actionsMap[actionName];
+
+	try
+	{
+		if (!actionName)
+		{
+			throw new Error('No path inside "appt_ catcher"');
+		}
+		await action(ctx, actionMode, pathId, userId);
+	} catch (error)
+	{
+		logErrorAndThrow(
+			error,
+			actionName ? "error" : "debug",
+			actionName ? "error handling appt_ path" : "path error",
+		);
+		await startHandler(ctx);
+	}
+})
 
 keyboard.callbackQuery(/appt_/, async (ctx) => {
 	type actionMap = "create" | 'check' | 'cancel'

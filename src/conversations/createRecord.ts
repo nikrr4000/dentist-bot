@@ -4,12 +4,12 @@ import apptSlotsCtrl from "#db/handlers/apptSlotsCtrl.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import type { ApptSlotsCreationT, ApptSlotsT } from "#db/models/ApptSlots.js";
 import type { RecordCreationT } from "#db/models/Records.js";
-import { manageApptSlots, manageApptSlotsK } from "#helpers/apptSlotsUtils.js";
+import { manageApptSlots, manageApptSlotsK } from "#helpers/index.js";
 import { apptsServices } from "#helpers/apptUtils.js";
-import guardExp from "#helpers/guardExp.js";
-import { addMainMenuButton, handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
+import { guardExp } from "#helpers/index.js";
+import { handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
 import { proceduresInfoManager, proceduresKManager } from "#helpers/proceduresUtils.js";
-import { createRecordTexts } from "#helpers/recordsUtils.js";
+import { createRecordTexts } from "#helpers/index.js";
 import { mainMenu, menuDenyConfirmK } from "#keyboards/generalKeyboards.js";
 import startHandler from "#serviceMessages/startHandler.js";
 import type { MyContext, MyConversation } from "#types/grammy.types.js";
@@ -85,7 +85,7 @@ const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 		const { callbackQuery: { data } } = await conversation.waitForCallbackQuery(/.+/);
 		const [label, id] = data.split("__")
 
-		return [label, Number(id)] as [string, number];
+		return [label, +id] as [string, number];
 	},
 	async getInterval(apptId: number, procedureId: number) {
 		const slotsManager = manageApptSlots(apptId)

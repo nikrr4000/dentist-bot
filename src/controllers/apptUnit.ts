@@ -1,14 +1,13 @@
 import apptCtrl from "#db/handlers/apptCtrl.js";
-import { apptsKServices, apptsServices } from "#helpers/apptUtils.js";
+import { apptsKServices, apptsServices } from "#helpers/index.js";
 import notificator from "#helpers/notificator.js";
-import { createRecordTexts } from "#helpers/recordsUtils.js";
+import { createRecordTexts } from "#helpers/index.js";
 import { adminMenu, backButton } from "#keyboards/generalKeyboards.js";
 import type { MyContext } from "#types/grammy.types.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
 import type { InlineKeyboard } from "grammy";
-import { log } from "node:console";
 
-export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
+const apptUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
     mode: args[0],
     adminMode: args[0] === 'admin',
     pathId: args[1],
@@ -56,3 +55,5 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
         ctx.editMessageText(text, { reply_markup: k })
     }
 })
+
+export { apptUnit }

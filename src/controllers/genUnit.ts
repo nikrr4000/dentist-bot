@@ -1,14 +1,16 @@
 import apptCtrl from "#db/handlers/apptCtrl.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
-import { apptsKServices, createRecordKs, createRecordTexts, dates } from "#helpers/index.js";
+import { apptsKServices, createRecordKs, createRecordTexts } from "#helpers/index.js";
 import { addBackButton } from "#helpers/keyboardUtils.js";
-import notificator from "#helpers/notificator.js";
 import { backButton } from "#keyboards/generalKeyboards.js";
 import type { MyContext } from "#types/grammy.types.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
 import type { InlineKeyboard } from "grammy";
+import { settingsUnit } from "./settingsUnit.js";
+import dates from "#helpers/dates.js";
 
-export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
+
+const genUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
 	adminMode: args[0] === 'admin',
 	pathId: args[1],
 	userId: args[2],
@@ -32,7 +34,7 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 				path,
 				action,
 				this.adminMode,
-				ctx.userId,
+				{ userId: ctx.userId },
 			);
 			k = addBackButton(basicK)
 		}
@@ -57,5 +59,8 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
 		const k = createRecordKs.basic(records, false).row().text('Назад', 'back')
 
 		await ctx.editMessageText(text, { reply_markup: k })
-	}
+	},
+	showSettings: () => settingsUnit(ctx, ...args).showSettings()
 });
+
+export { genUnit }

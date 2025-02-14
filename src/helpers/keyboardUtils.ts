@@ -1,5 +1,15 @@
 import type { MyContext } from "#types/grammy.types.js";
+import type { dataStructure } from "#types/shared.types.js";
 import { InlineKeyboard, type CallbackQueryContext } from "grammy";
+
+function constructDefaultButtonsData(buttonLabels: string[], buttonDataArr: dataStructure[]) {
+	return buttonDataArr.map((d, i) => {
+		return [buttonLabels[i], `${d.path}_${d.action}_${d.mode}_${d.pathId}_${d.userId}`] as [
+			string,
+			string,
+		];
+	})
+}
 
 const getCallbackData = (ctx: CallbackQueryContext<MyContext>) =>
 	ctx.callbackQuery.data;
@@ -30,4 +40,4 @@ const callbackDataSplitter = <T>(ctx: CallbackQueryContext<MyContext>) => {
 		.flatMap((el) => el.split("_")) as defaultCallbackData;
 };
 
-export { handleMenuDenyConfirmKAnswer, addMainMenuButton, callbackDataSplitter, keyboardFromData, addBackButton };
+export { handleMenuDenyConfirmKAnswer, addMainMenuButton, callbackDataSplitter, keyboardFromData, addBackButton, constructDefaultButtonsData };

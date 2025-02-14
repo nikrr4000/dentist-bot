@@ -1,4 +1,4 @@
-import guardExp from "#helpers/guardExp.js";
+import { guardExp } from "#helpers/guardExp.js";
 import type { MyContext } from "#types/grammy.types.js";
 
 export default async function (ctx: MyContext) {
@@ -8,12 +8,14 @@ export default async function (ctx: MyContext) {
   guardExp(routeParams, "routeParams inside handleBackButton");
   // ctx.session.conversation = {};
 
-  if (canEdit) {
+  if (canEdit)
+  {
     await ctx.editMessageText(routeParams.text, {
       reply_markup: routeParams.reply_markup,
       parse_mode: "HTML",
     });
-  } else {
+  } else
+  {
     await ctx.reply(routeParams.text, {
       reply_markup: routeParams.reply_markup,
       parse_mode: "HTML",

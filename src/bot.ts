@@ -13,7 +13,7 @@ import sanitizedConfig from "./config.js";
 import logErrorAndThrow from "#handlers/logErrorAndThrow.js";
 import { mainMenu } from "#keyboards/generalKeyboards.js";
 import { createAppt } from "#conv/createAppt.js";
-import userReg from "#conv/userReg.js";
+import { userReg, changeName } from "#conv/userReg.js";
 import sendAdminMenu from "#serviceMessages/sendAdminMenu.js";
 import { keyboard } from "#handlers/buttonRouters.js";
 import { createRecord } from "#conv/createRecord.js";
@@ -42,6 +42,7 @@ bot.use(
 );
 bot.use(conversations());
 bot.use(createConversation(userReg));
+bot.use(createConversation(changeName));
 bot.use(createConversation(createAppt));
 bot.use(createConversation(createRecord));
 bot.use(isUserAdmin)

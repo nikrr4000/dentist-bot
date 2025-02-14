@@ -3,18 +3,21 @@ import Appointments, {
 	type AppointmentT,
 	type AppointmentCreationT,
 } from "#db/models/Appointments.js";
-import type { operationLog } from "#types/shared.types.js";
+import type { createOperationLog } from "#types/shared.types.js";
 import { Op, type Transaction } from "sequelize";
 import apptSlotsCtrl from "./apptSlotsCtrl.js";
 import dates from "#helpers/dates.js";
 import logErrorAndThrow from "#handlers/logErrorAndThrow.js";
+import type { ApptSlotsT } from "#db/models/ApptSlots.js";
 
 export default {
 	async create(query: AppointmentCreationT) {
 		const opResult = {
 			status: "ok",
 			details: undefined,
-		} as operationLog;
+			firstOp: undefined,
+			secondOp: undefined
+		} as createOperationLog<AppointmentT, ApptSlotsT[]>;
 		const transaction = await sequelize.transaction();
 
 		try
@@ -31,6 +34,10 @@ export default {
 			}
 
 			await transaction.commit();
+
+			opResult.firstOp = createdAppt
+			// opResult.secondOp = createdSlots
+
 			return opResult;
 		} catch (err)
 		{

@@ -1,16 +1,15 @@
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
-import { apptsServices } from "#helpers/apptUtils.js";
-import { createRecordKs, createRecordTexts, recordServices } from "#helpers/recordsUtils.js";
+import { createRecordKs, createRecordTexts, recordServices } from "#helpers/index.js";
 import { mainMenu } from "#keyboards/generalKeyboards.js";
 import type { MyContext } from "#types/grammy.types.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
 import type { InlineKeyboard } from "grammy";
 
-export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
+const recordsUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
     mode: args[0],
     adminMode: args[0] === 'admin',
     pathId: args[1] || 0,
-    userId: args[2] || 0,
+    userId: args[2] || ctx.from?.id || 0,
     async showRecordInfo() {
         let text: string
         let k: InlineKeyboard
@@ -52,3 +51,5 @@ export default (ctx: MyContext, ...args: basicCallbackArgs) => ({
         ctx.editMessageText(text, { reply_markup: k })
     },
 })
+
+export { recordsUnit }

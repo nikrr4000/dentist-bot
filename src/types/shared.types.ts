@@ -1,6 +1,7 @@
 import type { AppointmentT } from "#db/models/Appointments.js";
 import type { ProcedureT } from "#db/models/Procedures.js";
 import type { RecordT } from "#db/models/Records.js";
+import type { UserT } from "#db/models/Users.js";
 
 export type Config = Record<
 	| "BOT_API_TOKEN"
@@ -25,6 +26,10 @@ export type PaymentStatusesT = "pending" | "paid" | "confirmed";
 
 export type infoUnitPathsType = "who" | "where" | "when";
 
+export type settingsDataT = {
+	user: UserT;
+}
+
 export type loggerLevelsType =
 	| "fatal"
 	| "error"
@@ -38,7 +43,16 @@ export type operationLog = {
 	details: undefined | string
 }
 
+export type createOperationLog<T, K> = operationLog & {
+	firstOp: T | undefined,
+	secondOp: K | undefined
+}
+
 export type taskT = {
 	expression: string;
 	task: () => Promise<void>;
+}
+
+export type dataStructure = {
+	path: string, action: string, mode: string, pathId: number, userId?: number
 }

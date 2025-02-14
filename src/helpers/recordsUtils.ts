@@ -4,7 +4,7 @@ import type { RecordAppointmentProcedureT, RecordProcedureT } from "#types/share
 import { InlineKeyboard } from "grammy"
 import { slotsServices } from "./apptSlotsUtils.js"
 import dates from "./dates.js"
-import { addMainMenuButton, keyboardFromData } from "./keyboardUtils.js"
+import { addMainMenuButton, keyboardFromData } from "./index.js"
 import { usersInfoManager } from "./usersUtils.js"
 import type { RecordT } from "#db/models/Records.js"
 import notificator from "./notificator.js"

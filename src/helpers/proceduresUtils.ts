@@ -19,13 +19,9 @@ const proceduresInfoManager = {
 };
 
 const proceduresKManager = {
-	getProcedureButtonText: (procedure: ProcedureT) => {
-		return procedure.name;
-	},
-	getProcedureButtonLabel: (procedure: ProcedureT) => {
-		// TODO: add path and action params
-		return `${procedure.name}__${procedure.id}`;
-	},
+	getProcedureButtonText: (procedure: ProcedureT) => procedure.name,
+	// TODO: add path and action params
+	getProcedureButtonLabel: (procedure: ProcedureT) => `${procedure.name}__${procedure.id}`,
 	async getList() {
 		const procedures = await proceduresCtrl.find().all();
 		const kButtonData = procedures.map((el) => {

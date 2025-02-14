@@ -7,9 +7,10 @@ export type UserT = {
 	secondName: string;
 	username: string | undefined;
 	regDate: Date;
+	newApptsSub: boolean;
 };
 
-export type UserCreationT = PartialBy<UserT, "userId" | "regDate">;
+export type UserCreationT = PartialBy<UserT, "userId" | "regDate" | "newApptsSub">;
 
 @Table({
 	timestamps: false,
@@ -19,7 +20,7 @@ export type UserCreationT = PartialBy<UserT, "userId" | "regDate">;
 })
 export default class Users extends Model<UserT, UserCreationT> {
 	@Column({
-		type: DataType.INTEGER,
+		type: DataType.BIGINT,
 		primaryKey: true,
 		unique: true,
 	})
@@ -44,4 +45,10 @@ export default class Users extends Model<UserT, UserCreationT> {
 		type: DataType.DATE,
 	})
 	declare regDate: Date;
+
+	@Column({
+		type: DataType.BOOLEAN,
+		defaultValue: false
+	})
+	declare newApptsSub: boolean;
 }
