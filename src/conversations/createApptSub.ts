@@ -6,6 +6,7 @@ import unlessActions from "./helpers/unlessActions.js";
 import apptSubsCtrl from "#db/handlers/apptSubsCtrl.js";
 import { mainMenu } from "#keyboards/generalKeyboards.js";
 import { createApptSubsKs } from "#helpers/moduleUtils/apptSubsUtils.js";
+import notificator from "#helpers/notificator.js";
 
 export async function createApptSub(conversation: MyConversation,
     ctx: MyContext,) {
@@ -19,6 +20,7 @@ export async function createApptSub(conversation: MyConversation,
         const [label, id] = await h.handleProcedureId(t, k)
 
         const createSubRes = await h.createSub(id)
+        notificator.sendInfoMsg("info", `Пользователь ${ctx.session.user.firstName} ${ctx.session.user.secondName} ${ctx.from?.username} подписался на процедуру "${label}"`)
         resT = h.texts.success(label)
     } catch (error)
     {
