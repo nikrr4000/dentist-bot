@@ -3,11 +3,11 @@ import usersCtrl from "#db/handlers/usersCtrl.js"
 import type { RecordAppointmentProcedureT, RecordProcedureT } from "#types/shared.types.js"
 import { InlineKeyboard } from "grammy"
 import { slotsServices } from "./apptSlotsUtils.js"
-import dates from "./dates.js"
-import { addMainMenuButton, keyboardFromData } from "./index.js"
+import dates from "#helpers/dates.js"
+import { addMainMenuButton, keyboardFromData } from "#helpers/index.js"
 import { usersInfoManager } from "./usersUtils.js"
 import type { RecordT } from "#db/models/Records.js"
-import notificator from "./notificator.js"
+import notificator from "#helpers/notificator.js"
 
 const recordServices = {
     cancelRecord: async (recordId: number) => {
@@ -32,15 +32,16 @@ const recordServices = {
     async notificateAboutAppt(apptId: number) {
         const records = await recordsCtrl.findFutureRecords({ apptId });
         if (!records.length) return
-        let text = 'Вы записаны на следующую запись.\n'
-        text += createRecordTexts.recordInfo(records[0])
-        text += 'Подтвердите её или она будет автоматически отменена.'
-
         for (const record of records)
         {
+            // TODO: add one-message notification
             const userId = record.userId
             const k = createRecordKs.confirmCancel(record)
-            // Add check if all messages were sent
+
+            let text = 'Вы записаны на следующую запись.\n'
+            text += createRecordTexts.recordInfo(record)
+            text += 'Подтвердите её или она будет автоматически отменена.'
+            // TODO: Add check if all messages were sent
             notificator.sendMessageById(text, userId, k)
         }
     }

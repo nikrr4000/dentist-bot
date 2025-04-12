@@ -3,11 +3,12 @@ import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import { apptsKServices, createRecordKs, createRecordTexts } from "#helpers/index.js";
 import { addBackButton } from "#helpers/keyboardUtils.js";
 import { backButton } from "#keyboards/generalKeyboards.js";
-import type { MyContext } from "#types/grammy.types.js";
+import type { MyContext, MyConversation } from "#types/grammy.types.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
 import type { InlineKeyboard } from "grammy";
 import { settingsUnit } from "./settingsUnit.js";
 import dates from "#helpers/dates.js";
+import { waitingListUnit } from "./waitingListUnit.js";
 
 
 const genUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
@@ -29,7 +30,7 @@ const genUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
 			k = backButton
 		} else
 		{
-			text = "На данный момент открыта запись на следующие даты";
+			text = "На данный момент открыт прием на следующие даты:";
 			const basicK = await apptsKServices.createBasicKeyboard(
 				path,
 				action,
@@ -41,6 +42,7 @@ const genUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
 
 		ctx.editMessageText(text, { reply_markup: k });
 	},
+	showWaitingListMenu: async () => waitingListUnit(ctx, ...args).showMenu(),
 	async showSchedule() {
 		const userId = ctx.userId
 

@@ -3,15 +3,15 @@ import apptSlotsCtrl from "#db/handlers/apptSlotsCtrl.js";
 import type { AppointmentT } from "#db/models/Appointments.js";
 import type { ApptSlotsT } from "#db/models/ApptSlots.js";
 import { InlineKeyboard } from "grammy";
-import dates from "./dates.js";
-import { constructDefaultButtonsData, keyboardFromData } from "./keyboardUtils.js";
+import dates from "#helpers/dates.js";
+import { constructDefaultButtonsData, keyboardFromData } from "#helpers/keyboardUtils.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import { createRecordTexts } from "./recordsUtils.js";
 import { sequelize } from "#db/dbClient.js";
-import notificator from "./notificator.js";
+import notificator from "#helpers/notificator.js";
 import { mainMenu } from "#keyboards/generalKeyboards.js";
 import type { Message } from "grammy/types";
-import { guardExp } from "./index.js";
+import { guardExp } from "#helpers/index.js";
 
 const apptsServices = {
 	futureAppts() {
@@ -50,18 +50,18 @@ const apptsServices = {
 		const startStr = dates.getStrDateWithoutDate(dateStart)
 		const endStr = dates.getStrDateWithoutDate(dateEnd)
 
-		let text = `Место приема: ${appt.place}\n`;
-		text += `Дата: ${dateStr}\n`;
-		text += `Время начала: ${startStr}\n`;
-		text += `Время окончания: ${endStr}\n`;
+		let text = `<b>Место приема</b>: ${appt.place}\n`;
+		text += `<b>Дата</b>: ${dateStr}\n`;
+		text += `<b>Время начала</b>: ${startStr}\n`;
+		text += `<b>Время окончания</b>: ${endStr}\n`;
 
 		return text
 	},
 	notificateAboutCancel: async (dataMap: Map<number, string>) => {
-		const baseText = 'Ваши записи:\n\n'
+		const baseText = 'Записи:\n\n'
 		const notifResultsPromises = [] as Promise<Message.TextMessage>[]
 		dataMap.forEach((value, key) => {
-			const infoText = `${baseText}${value}\nбыла отменена так как прием был закрыт.`
+			const infoText = `${baseText}${value}\n\nбыли отменены так как прием был закрыт.`
 			const notifRes = notificator.sendMessageById(infoText, key, mainMenu.menu)
 			notifResultsPromises.push(notifRes)
 		})
@@ -79,7 +79,7 @@ const apptsServices = {
 				const existingKey = acc.get(record.userId)
 				if (existingKey)
 				{
-					return acc.set(record.userId, `${existingKey}${text}`)
+					return acc.set(record.userId, `${existingKey}${text}\n`)
 				}
 				return acc.set(record.userId, text)
 			}, new Map<number, string>())
@@ -107,8 +107,6 @@ interface CreateBasicKeyboardOptionalParams {
 }
 
 const apptsKServices = {
-	getTextButtons: (appts: AppointmentT[]) =>
-		appts.map(apptsServices.getApptDateText),
 	async createBasicKeyboard(path: string, action: string, adminMode: boolean, optionalParams?: CreateBasicKeyboardOptionalParams) {
 		let { userId, appts } = optionalParams || {};
 		const mode = adminMode ? "admin" : "user";
@@ -117,7 +115,10 @@ const apptsKServices = {
 			appts = await apptsServices.getAvailableAppts(adminMode);
 		}
 
-		const kTexts = appts.flatMap((el) => this.getTextButtons([el]));
+		const kTexts = adminMode ?
+			appts.flatMap(el => `Информация о приеме ${apptsServices.getApptDateText(el)}`) :
+			appts.flatMap(el => `Записаться на ${apptsServices.getApptDateText(el)}`)
+
 		const keyboardDataStructures = appts.map(appt => ({ path, action, mode, pathId: appt.id, userId }))
 
 		const keyboardData = constructDefaultButtonsData(kTexts, keyboardDataStructures);

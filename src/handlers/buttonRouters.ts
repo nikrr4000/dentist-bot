@@ -7,11 +7,12 @@ import sendAdminMenu from "#serviceMessages/sendAdminMenu.js";
 import type { basicCallbackArgs } from "#types/shared.types.js";
 import { guardExp } from "#helpers/guardExp.js";
 import { genUnit, settingsUnit, recordsUnit, apptUnit } from "#controllers/index.js";
+import { waitingListUnit } from "#controllers/waitingListUnit.js";
 
 export const keyboard = new Composer<MyContext>();
 
 keyboard.callbackQuery(/gen_/, async (ctx) => {
-	type actionMap = "appt-check" | "admin-menu" | 'main-menu' | 'records-check' | 'settings';
+	type actionMap = "appt-check" | "admin-menu" | 'main-menu' | 'records-check' | 'settings' | 'waiting-list';
 
 	const actionsMap: Record<
 		actionMap,
@@ -21,7 +22,8 @@ keyboard.callbackQuery(/gen_/, async (ctx) => {
 		'admin-menu': async (ctx, ...args) => sendAdminMenu(ctx),
 		'main-menu': async (ctx, ...args) => { startHandler(ctx) },
 		'records-check': async (ctx, ...args) => genUnit(ctx, ...args).showSchedule(),
-		'settings': async (ctx, ...args) => genUnit(ctx, ...args).showSettings()
+		'settings': async (ctx, ...args) => genUnit(ctx, ...args).showSettings(),
+		'waiting-list': async (ctx, ...args) => genUnit(ctx, ...args).showWaitingListMenu(),
 	};
 
 	// TODO: Add more strict typing: third and fourth types acn be undefined
@@ -49,13 +51,12 @@ keyboard.callbackQuery(/gen_/, async (ctx) => {
 });
 
 keyboard.callbackQuery(/settings_/, async (ctx) => {
-	type actionMap = "switch-sub" | 'change-name'
+	type actionMap = 'change-name'
 
 	const actionsMap: Record<
 		actionMap,
 		(ctx: MyContext, ...args: basicCallbackArgs) => Promise<void>
 	> = {
-		'switch-sub': async (ctx, ...args) => settingsUnit(ctx, ...args).switchSub(),
 		'change-name': async (ctx, ...args) => settingsUnit(ctx, ...args).changeName(),
 	};
 
@@ -144,6 +145,42 @@ keyboard.callbackQuery(/record_/, async (ctx) => {
 		if (!actionName)
 		{
 			throw new Error('No path inside "appt_ catcher"');
+		}
+		await action(ctx, actionMode, pathId, userId);
+	} catch (error)
+	{
+		logErrorAndThrow(
+			error,
+			actionName ? "error" : "debug",
+			actionName ? "error handling appt_ path" : "path error",
+		);
+		await startHandler(ctx);
+	}
+});
+
+keyboard.callbackQuery(/waiting-list_/, async (ctx) => {
+	type actionMap = "create" | 'cancel' | 'check';
+
+	const actionsMap: Record<
+		actionMap,
+		(ctx: MyContext, ...args: basicCallbackArgs) => Promise<void>
+	> = {
+		create: async (ctx, ...args) => {
+			await ctx.conversation.enter("createApptSub");
+		},
+		cancel: async (ctx, ...args) => waitingListUnit(ctx, ...args).cancelSub(),
+		check: async (ctx, ...args) => waitingListUnit(ctx, ...args).showMenu()
+	};
+
+	const [_, actionName, actionMode, pathId, userId] =
+		callbackDataSplitter<actionMap>(ctx);
+	const action = actionsMap[actionName];
+
+	try
+	{
+		if (!actionName)
+		{
+			throw new Error('No path inside "waiting-list_ catcher"');
 		}
 		await action(ctx, actionMode, pathId, userId);
 	} catch (error)

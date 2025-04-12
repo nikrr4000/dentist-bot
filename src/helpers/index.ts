@@ -3,9 +3,9 @@ export * from "./guardExp.js";
 export * from "./intermediateHelpers.js";
 export * from "./smoothReplier.js";
 export * from "./keyboardUtils.js";
-export * from "./apptUtils.js";
-export * from "./proceduresUtils.js";
-export * from "./apptSlotsUtils.js";
-export * from './recordsUtils.js'
-export * from './usersUtils.js'
-export * from './settingsUtils.js'
+export * from "./moduleUtils/apptUtils.js";
+export * from "./moduleUtils/proceduresUtils.js";
+export * from "./moduleUtils/apptSlotsUtils.js";
+export * from './moduleUtils/recordsUtils.js'
+export * from './moduleUtils/usersUtils.js'
+export * from './moduleUtils/settingsUtils.js'

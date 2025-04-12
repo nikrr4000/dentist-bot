@@ -43,5 +43,5 @@ export default class Procedures extends Model<ProcedureT, ProcedureCreationT> {
 	@Column({
 		type: DataType.INTEGER,
 	})
-	declare cost: number
+	declare cost: number;
 }

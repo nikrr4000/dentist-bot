@@ -12,12 +12,17 @@ const menuDenyConfirmK = (short = false) => {
 		.text("Главное меню", "main_menu");
 };
 
-function greetingKeyboard() {
+function greetingKeyboard(foundAppts: boolean) {
 	const keyboard = new InlineKeyboard()
 		.url("зубы даши силаевой", "https://t.me/zubsilaevoi")
 		.row()
+		.text("Лист ожидания", "gen_waiting-list_user")
+		.row()
+
+	foundAppts && keyboard
 		.text("Доступные записи", "gen_appt-check_user")
 		.row()
+	keyboard
 		.text('Ваши записи', "gen_records-check_user")
 		.row()
 		.text('Настройки', 'gen_settings');
@@ -26,8 +31,10 @@ function greetingKeyboard() {
 
 
 const adminMenuKeyboard = () => {
-	const k = new InlineKeyboard();
-	k.text("Создать встречу", "appt_create_admin")
+	const k = new InlineKeyboard()
+		.text("Создать запись", "appt_create_admin")
+		.row()
+		.text('Предварительные записи', 'gen_waiting-list_admin')
 		.row()
 		.text('Открытые записи', "gen_appt-check_admin");;
 

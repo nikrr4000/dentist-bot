@@ -1,4 +1,5 @@
 import type { AppointmentT } from "#db/models/Appointments.js";
+import type { SubT } from "#db/models/ApptSubs.js";
 import type { ProcedureT } from "#db/models/Procedures.js";
 import type { RecordT } from "#db/models/Records.js";
 import type { UserT } from "#db/models/Users.js";
@@ -28,6 +29,7 @@ export type infoUnitPathsType = "who" | "where" | "when";
 
 export type settingsDataT = {
 	user: UserT;
+	userSubs: SubT[]
 }
 
 export type loggerLevelsType =

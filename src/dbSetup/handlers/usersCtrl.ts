@@ -13,5 +13,6 @@ export default {
 			one: () => Users.findOne({ where: query }),
 		};
 	},
+	findBatchByIds: (userIds: number[]) => Users.findAll({ where: { userId: userIds } }),
 	setApptSub: (userId: number, value: boolean) => Users.update({ newApptsSub: value }, { where: { userId } }),
 };

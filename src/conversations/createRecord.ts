@@ -4,12 +4,14 @@ import apptSlotsCtrl from "#db/handlers/apptSlotsCtrl.js";
 import recordsCtrl from "#db/handlers/recordsCtrl.js";
 import type { ApptSlotsCreationT, ApptSlotsT } from "#db/models/ApptSlots.js";
 import type { RecordCreationT } from "#db/models/Records.js";
-import { manageApptSlots, manageApptSlotsK } from "#helpers/index.js";
-import { apptsServices } from "#helpers/apptUtils.js";
-import { guardExp } from "#helpers/index.js";
-import { handleMenuDenyConfirmKAnswer } from "#helpers/keyboardUtils.js";
-import { proceduresInfoManager, proceduresKManager } from "#helpers/proceduresUtils.js";
-import { createRecordTexts } from "#helpers/index.js";
+import {
+	manageApptSlots, manageApptSlotsK,
+	apptsServices,
+	guardExp,
+	handleMenuDenyConfirmKAnswer,
+	proceduresInfoManager, proceduresKManager,
+	createRecordTexts
+} from "#helpers/index.js";
 import { mainMenu, menuDenyConfirmK } from "#keyboards/generalKeyboards.js";
 import startHandler from "#serviceMessages/startHandler.js";
 import type { MyContext, MyConversation } from "#types/grammy.types.js";
@@ -80,8 +82,8 @@ const recordH = (ctx: MyContext, conversation: MyConversation) => ({
 		const k = await proceduresKManager.getList();
 		const descriptions = await proceduresInfoManager.getProceduresDescrList()
 		const t = `${this.texts.procedureId}${descriptions}`
-		await ctx.editMessageText(t, { reply_markup: k, parse_mode: 'HTML' });
 
+		await ctx.editMessageText(t, { reply_markup: k });
 		const { callbackQuery: { data } } = await conversation.waitForCallbackQuery(/.+/);
 		const [label, id] = data.split("__")
 

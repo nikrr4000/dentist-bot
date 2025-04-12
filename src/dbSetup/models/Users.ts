@@ -1,5 +1,6 @@
-import { Table, Model, Column, DataType } from "sequelize-typescript";
+import { Table, Model, Column, DataType, HasMany } from "sequelize-typescript";
 import type { PartialBy } from "@sequelize/utils";
+import ApptSubs from "./ApptSubs.js";
 
 export type UserT = {
 	userId: number;
@@ -8,6 +9,7 @@ export type UserT = {
 	username: string | undefined;
 	regDate: Date;
 	newApptsSub: boolean;
+	ApptSubs?: ApptSubs[];
 };
 
 export type UserCreationT = PartialBy<UserT, "userId" | "regDate" | "newApptsSub">;
@@ -51,4 +53,7 @@ export default class Users extends Model<UserT, UserCreationT> {
 		defaultValue: false
 	})
 	declare newApptsSub: boolean;
+
+	@HasMany(() => ApptSubs)
+	declare ApptSubs: ApptSubs[];
 }

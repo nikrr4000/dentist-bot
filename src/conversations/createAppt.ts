@@ -12,6 +12,7 @@ import unlessActions from "./helpers/unlessActions.js";
 import usersCtrl from "#db/handlers/usersCtrl.js";
 import notificator from "#helpers/notificator.js";
 import { apptsKServices, apptsServices } from "#helpers/index.js";
+import apptSubsCtrl from "#db/handlers/apptSubsCtrl.js";
 
 type apptInfoGatheringT = {
 	[key: string]: string;
@@ -85,13 +86,15 @@ const apptHs = (ctx: MyContext, conversation: MyConversation) => ({
 		{
 			const result = await apptCtrl.create(dbObj);
 
-			if (result.status === "ok")
+			if (result.status !== "ok") throw new Error(result.details);
+
+			if (result.firstOp)
 			{
+				await this.notificateUsers(result.firstOp)
+				await this.clearSubs()
 				this.sendSuccessMessage();
-				if (result.firstOp) this.notificateUsers(result.firstOp)
-				return;
 			}
-			throw new Error(result.details);
+			return
 		} catch (err)
 		{
 			logErrorAndThrow(err, "error", "error trying to create an appointment");
@@ -103,16 +106,18 @@ const apptHs = (ctx: MyContext, conversation: MyConversation) => ({
 		ctx.api.editMessageText(chatId, message_id, "Запись успешно открыта", { reply_markup: adminMenu.menu });
 	},
 	notificateUsers: async (appt: AppointmentT) => {
-		const users = await usersCtrl.find({ newApptsSub: true }).all()
-		const userIds = users.map(user => user.userId)
+		const subs = await apptSubsCtrl.findAll()
+		const userIds = [...new Set(subs.map(sub => sub.userId))]
 
-		let text = 'Была открыта новая запись:\n'
+		let text = '<b>Была открыта новая запись</b>\n\n'
 		text += apptsServices.createApptInfo(appt)
+		text += '\n\n<i>Лист ожидания был очищен. Если вы не сможете посетить данный прием, но хотите получить уведомление о следующем приеме, создайте новую предварительную запись в главном меню.</i>'
 
 		const k = await apptsKServices.createBasicKeyboard('record', 'create', false, { appts: [appt] })
 
 		notificator.sendBulkMessages(text, userIds, addMainMenuButton(k))
 	},
+	clearSubs: () => apptSubsCtrl.truncate(),
 	falseAnswerHandler: async () => {
 		await sendAdminMenu(ctx);
 		return;

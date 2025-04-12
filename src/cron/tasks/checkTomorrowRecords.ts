@@ -10,7 +10,6 @@ export default {
         {
             try
             {
-
                 await recordServices.notificateAboutAppt(tomorrowAppt.id)
                 await notificator.sendInfoMsg('info', 'Была создана рассылка для подтверждения записи.')
             } catch (error)

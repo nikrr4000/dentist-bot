@@ -21,6 +21,7 @@ import isUserAdmin from "#middleware/isUserAdmin.js";
 import returner from "#middleware/returner.js";
 import CronScheduler from "./cron/CronScheduler.js";
 import notificator from "#helpers/notificator.js";
+import { createApptSub } from "#conv/createApptSub.js";
 
 (async () => {
 	await sequelize.sync({ alter: true });
@@ -32,6 +33,11 @@ import notificator from "#helpers/notificator.js";
 const token = sanitizedConfig.BOT_API_TOKEN;
 
 export const bot = new Bot<MyContext>(token);
+bot.api.config.use((prev, method, payload) => {
+	const _payload: any = payload
+	if (_payload !== undefined) _payload.parse_mode = "HTML"
+	return prev(method, _payload)
+})
 bot.api.config.use(hydrateFiles(token));
 export const admin = new Api(token);
 
@@ -45,6 +51,7 @@ bot.use(createConversation(userReg));
 bot.use(createConversation(changeName));
 bot.use(createConversation(createAppt));
 bot.use(createConversation(createRecord));
+bot.use(createConversation(createApptSub));
 bot.use(isUserAdmin)
 bot.use(ctxExtender);
 bot.use(returner)

@@ -12,8 +12,8 @@ const settingsUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
     userId: args[2],
 
     async showSettings(reply = false) {
-        const { user } = await settingsServices.collectUserData(ctx.userId)
-        const h = showSettingsH({ user })
+        const userData = await settingsServices.collectUserData(ctx.userId)
+        const h = showSettingsH(userData)
         const text = h.createMessageText()
         const k = h.createKeyboard()
 
@@ -25,32 +25,21 @@ const settingsUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
         ctx.deleteMessage()
         await ctx.conversation.enter('changeName')
     },
-    switchSub: async function () {
-        await settingsServices.switchSubNotifs(ctx.userId, !!Number(this.pathId))
-        notificator.sendInfoMsg('info', `Пользователь с id ${ctx.userId} @${ctx.from?.username || 'unknown'} подписался на новые приемы.`)
-        this.showSettings()
-    }
 })
 
 
 const showSettingsH = ({ user }: settingsDataT) => ({
     createMessageText: function () {
-        let text = `👤 Ваше имя: ${user.firstName} ${user.secondName}\n`
-        text += `Подписка на новые записи: ${this.getSubEmoji}`
-        return text
+        return `👤 Ваше имя: ${user.firstName} ${user.secondName}\n`
+
     },
-    getSubEmoji: user.newApptsSub ? '🟢' : '🔴',
-    getBit: user.newApptsSub ? 1 : 0,
-    getSubButtonText: user.newApptsSub ? 'Отменить подписку' : 'Подписаться на уведомления',
     createKeyboard: function () {
-        return addMainMenuButton(new InlineKeyboard().text(...this.createData('Изменить имя', 'change-name'))
-            .row()
-            .text(...this.createData(`${this.getSubButtonText}`, 'switch-sub')))
-    },
-    createData: function (label: string, action: string) {
-        const data: dataStructure = { path: 'settings', action: action, mode: 'user', pathId: this.getBit, userId: user.userId }
-        return constructDefaultButtonsData([label], [data]).flat() as [string, string]
+        return addMainMenuButton(new InlineKeyboard().text('Изменить имя', 'change-name'))
     }
+    // createData: function (label: string, action: string) {
+    //     const data: dataStructure = { path: 'settings', action: action, mode: 'user', pathId: this.getBit, userId: user.userId }
+    //     return constructDefaultButtonsData([label], [data]).flat() as [string, string]
+    // }
 })
 
 export { settingsUnit }

@@ -2,8 +2,8 @@ import apptSlotsCtrl from "#db/handlers/apptSlotsCtrl.js";
 import proceduresCtrl from "#db/handlers/proceduresCtrl.js";
 import type { ApptSlotsT } from "#db/models/ApptSlots.js";
 import { InlineKeyboard } from "grammy";
-import dates from "./dates.js";
-import { guardExp } from "./index.js";
+import dates from "../dates.js";
+import { guardExp } from "#helpers/index.js";
 
 type idsWithText = Map<string, string>;
 

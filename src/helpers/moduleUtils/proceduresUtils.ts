@@ -1,6 +1,6 @@
 import proceduresCtrl from "#db/handlers/proceduresCtrl.js";
 import type { ProcedureT } from "#db/models/Procedures.js";
-import { keyboardFromData } from "./keyboardUtils.js";
+import { keyboardFromData } from "#helpers/index.js";
 
 const proceduresInfoManager = {
 	getProceduresNamesMap: async () => {
@@ -10,6 +10,7 @@ const proceduresInfoManager = {
 			return acc
 		}, new Map<number, string>())
 	},
+	getProcedureName: (id: number) => proceduresCtrl.find({ id }).one(),
 	getProceduresDescrList: async () => {
 		const descriptions = await proceduresCtrl.find().all()
 		const list = descriptions.map(procedure => `⚫️<b>${procedure.name}</b> — ${procedure.details} — <b>${procedure.cost}</b>`).join('\n')

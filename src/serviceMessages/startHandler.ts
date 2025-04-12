@@ -3,7 +3,7 @@ import { guardExp, smoothReplier } from "#helpers/index.js";
 import { greetingKeyboard } from "#keyboards/index.js";
 import type { MyContext } from "#types/grammy.types.js";
 import type { UserT } from "#db/models/Users.js";
-import { usersCtrl } from "#db/handlers/index.js";
+import { apptCtrl, usersCtrl } from "#db/handlers/index.js";
 
 export default async function startHandler(ctx: MyContext) {
 	ctx.session.routeHistory = [];
@@ -18,18 +18,21 @@ export default async function startHandler(ctx: MyContext) {
 		await ctx.conversation.enter("userReg");
 		return;
 	}
-	return await sendStartMessage(ctx, user);
+	const appts = await apptCtrl.findFutureAppts()
+	const foundAppts = !!appts && appts.length > 0
+
+	return await sendStartMessage(ctx, user, foundAppts);
 }
 
-async function sendStartMessage(ctx: MyContext, user: UserT) {
+function sendStartMessage(ctx: MyContext, user: UserT, foundAppts: boolean) {
 	try
 	{
 		const h = sendStartMessageHelpers;
 
 		h.ctxFiller(ctx, user);
-		const greeting = h.createGreetingText(user.firstName);
-		const keyboard = greetingKeyboard();
-		return await smoothReplier(ctx, greeting, keyboard, "startHandler");
+		const greeting = h.createGreetingText(user.firstName, foundAppts);
+		const keyboard = greetingKeyboard(foundAppts);
+		return smoothReplier(ctx, greeting, keyboard, "startHandler");
 	} catch (err)
 	{
 		errorHandler(err, "fatal", "Error inside startHandler");
@@ -37,8 +40,9 @@ async function sendStartMessage(ctx: MyContext, user: UserT) {
 }
 
 const sendStartMessageHelpers = {
-	createGreetingText(firstName: string) {
-		const greeting = `Привет, ${firstName}!\nЗдесь можно записаться ко мне на прием, просто покликав кнопки. Если не хочешь кликать кнопки или есть вопросы - пишиии сюда @darialalala`;
+	createGreetingText(firstName: string, foundAppts: boolean) {
+		let greeting = `Привет, ${firstName}!\nЗдесь можно записаться ко мне на прием, просто покликав кнопки. Если не хочешь кликать кнопки или есть вопросы - пишиии сюда @darialalala`;
+		greeting += !foundAppts && '\n\nСейчас открытых записей нет, но ты можешь записаться в лист ожидания нажав на кнопку "Лист ожидания". Когда запись будет открыта, ты получишь уведомление.'
 		return greeting;
 	},
 	ctxFiller(ctx: MyContext, user: UserT) {
