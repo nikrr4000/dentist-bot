@@ -6,6 +6,7 @@ import type { basicCallbackArgs } from "#types/shared.types.js"
 import { createApptSubsKs } from "#helpers/moduleUtils/apptSubsUtils.js"
 import apptSubsCtrl from "#db/handlers/apptSubsCtrl.js"
 import { backButton } from "#keyboards/index.js"
+import notificator from "#helpers/notificator.js"
 
 const texts = {
     notSubbed: 'На данный момент вы не подписаны на уведомления о новых приёмах.',
@@ -42,6 +43,7 @@ const waitingListUnit = (ctx: MyContext, ...args: basicCallbackArgs) => ({
     async cancelSub() {
         await apptSubsCtrl.delete(+this.userId, +this.pathId)
         await this.showMenu()
+        notificator.sendInfoMsg("info", `Пользователь ${ctx.session.user.firstName} ${ctx.session.user.secondName} ${ctx.from?.username} отменил предварительную запись на процедуру`)
     },
     showAdminMenu: async (reply = false) => {
         const h = await showAdminMenuH()
