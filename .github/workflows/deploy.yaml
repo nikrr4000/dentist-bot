@@ -12,9 +12,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        
       - name: Install sshpass
-        run: sudo apt-get install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+          
       - name: Send signal to VM
-        run: sshpass -p $VM_PASSWORD ${{ vars.VM_USERNAME }}@${{ vars.VM_IP }} 'bash -s' < ./scripts/deploy.sh        
+        run: sshpass -p $VM_PASSWORD ssh -o StrictHostKeyChecking=no ${{ vars.VM_USERNAME }}@${{ vars.VM_IP }} 'bash -s' < ./scripts/deploy.sh        
         env:
           VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
