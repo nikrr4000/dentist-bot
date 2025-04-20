@@ -22,18 +22,11 @@ export async function smoothReplier(
 			return messageIdSaver(ctx, updatedCtx, fnName);
 		} catch (err)
 		{
-			const error = err as Error;
-			if (
-				error.message.match(/message is not modified|message can't be edited|message to edit not found/)
-			)
-			{
-				updatedCtx = await ctx.reply(messageText, {
-					reply_markup: keyboard,
-					parse_mode: "HTML",
-				});
-				return messageIdSaver(ctx, updatedCtx, fnName);
-			}
-			throw new Error(`bot can't edit and reply:\n ${error}`);
+			updatedCtx = await ctx.reply(messageText, {
+				reply_markup: keyboard,
+				parse_mode: "HTML",
+			});
+			return messageIdSaver(ctx, updatedCtx, fnName);
 		}
 	} catch (err)
 	{

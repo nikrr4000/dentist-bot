@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/github-actioner/dentist-bot
+cd /home/nikita/dentist-bot
 
 git pull origin main
 
